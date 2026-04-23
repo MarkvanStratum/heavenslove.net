@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Begin Your Journey — Heaven’s Love</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-heaven: #fdfcfb;
+      --marble: #ffffff;
+      --gold-divine: #c5a059;
+      --blue-saint: #2c3e50;
+      --text-main: #33302c;
+      --text-muted: #8a8276;
+      --border-holy: rgba(197, 160, 89, 0.25);
+      --radius: 12px;
+      --divine-shadow: 0 15px 50px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; color: var(--text-main); background-color: var(--bg-heaven);
+      background-image: radial-gradient(circle at 50% 0%, rgba(197, 160, 89, 0.12), transparent 30%);
+      font-family: "EB Garamond", serif; font-size: 19px; line-height: 1.7;
+      display: flex; align-items: center; justify-content: center; min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--marble);
+      border: 1px solid var(--border-holy);
+      border-radius: var(--radius);
+      box-shadow: var(--divine-shadow);
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header-area {
+      padding: 40px 40px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-holy);
+    }
+    .logo { 
+      width: 55px; height: 55px; background: white; border: 1.5px solid var(--gold-divine); 
+      border-radius: 50%; display: grid; place-items: center; 
+      font-family: "Cinzel", serif; color: var(--gold-divine); font-size: 24px; 
+      margin: 0 auto 20px;
+    }
+    h1 { font-family: "Cinzel", serif; font-size: 28px; color: var(--blue-saint); margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+    .subtitle { color: var(--gold-divine); font-style: italic; font-size: 17px; margin-top: 5px; }
+
+    .tabs { display: flex; background: #faf9f7; border-bottom: 1px solid var(--border-holy); }
+    .tab { flex: 1; padding: 15px; text-align: center; font-family: "Cinzel", serif; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: 0.2s; }
+    .tab.active { background: white; color: var(--gold-divine); font-weight: bold; border-bottom: 2px solid var(--gold-divine); }
+
+    .form-content { padding: 40px; }
+    
+    .input-group { margin-bottom: 20px; }
+    label { display: block; font-family: "Cinzel", serif; font-size: 12px; color: var(--blue-saint); margin-bottom: 8px; letter-spacing: 1px; }
+    input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #e0ddd5; font-family: inherit; font-size: 16px; transition: 0.3s; outline: none; }
+    input:focus { border-color: var(--gold-divine); box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1); }
+
+    .btn { 
+      padding: 16px; border-radius: 8px; font-family: "Cinzel", serif; cursor: pointer; 
+      border: 1px solid var(--gold-divine); background: var(--gold-divine); color: white; 
+      text-transform: uppercase; letter-spacing: 2px; width: 100%; font-size: 15px;
+      transition: 0.3s; font-weight: 600; margin-top: 10px;
+    }
+    .btn:hover { background: #b08d4a; transform: translateY(-1px); box-shadow: 0 5px 15px rgba(197, 160, 89, 0.2); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .msg { margin-bottom: 20px; padding: 15px; border-radius: 8px; font-size: 15px; display: none; text-align: center; }
+    .msg.error { display: block; background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
+    .msg.ok { display: block; background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
+
+    .hide { display: none !important; }
+    
+    footer { margin-top: 30px; text-align: center; font-size: 14px; color: var(--text-muted); }
+    footer a { color: var(--gold-divine); text-decoration: none; }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="header-area">
+      <div class="logo">†</div>
+      <h1>Heaven’s Love</h1>
+      <p class="subtitle">Join the Divine Connection</p>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" id="tabReg">New Account</div>
+      <div class="tab" id="tabLog">Sign In</div>
+    </div>
+
+    <div class="form-content">
+      <div id="statusMsg" class="msg"></div>
+
+      <div id="regPane">
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="regEmail" placeholder="e.g. soul@example.com" />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" placeholder="Minimum 6 characters" />
+        </div>
+        <button class="btn" id="regBtn">Create Account</button>
+      </div>
+
+      <div id="logPane" class="hide">
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="e.g. soul@example.com" />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" />
+        </div>
+        <button class="btn" id="loginBtn">Sign In</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // TAB TOGGLE
+    $("tabReg").onclick = () => {
+      $("tabReg").classList.add("active");
+      $("tabLog").classList.remove("active");
+      $("regPane").classList.remove("hide");
+      $("logPane").classList.add("hide");
+      clearMsg();
+    };
+
+    $("tabLog").onclick = () => {
+      $("tabLog").classList.add("active");
+      $("tabReg").classList.remove("active");
+      $("logPane").classList.remove("hide");
+      $("regPane").classList.add("hide");
+      clearMsg();
+    };
+
+    function showMsg(type, text) {
+      const m = $("statusMsg");
+      m.className = "msg " + type;
+      m.innerText = text;
+    }
+
+    function clearMsg() {
+      $("statusMsg").className = "msg";
+      $("statusMsg").innerText = "";
+    }
+
+    function setToken(t) { localStorage.setItem("jwt", t); }
+    
+    function setBusy(isBusy) {
+      const btns = document.querySelectorAll(".btn");
+      btns.forEach(b => b.disabled = isBusy);
+    }
+
+    // REGISTER + REDIRECT
+    $("regBtn").onclick = async () => {
+      clearMsg();
+      const email = $("regEmail").value.trim();
+      const password = $("regPassword").value;
+
+      if (!email || !password) {
+        showMsg("error", "Please provide both email and password.");
+        return;
+      }
+
+      setBusy(true);
+      try {
+        // 1) Register
+        const regRes = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const regData = await regRes.json().catch(() => ({}));
+
+        if (!regRes.ok) {
+          showMsg("error", regData.error || "Could not create account.");
+          setBusy(false);
+          return;
+        }
+
+        // 2) Auto-Login
+        const logRes = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const logData = await logRes.json().catch(() => ({}));
+
+        if (!logRes.ok || !logData.token) {
+          showMsg("ok", "Account created. Please sign in.");
+          $("tabLog").click();
+          setBusy(false);
+          return;
+        }
+
+        setToken(logData.token);
+        showMsg("ok", "Welcome to Heaven’s Love. Preparing your path…");
+
+        // 3) Redirect to pricing
+        setTimeout(() => {
+          window.location.href = "/pricing.html";
+        }, 650);
+
+      } catch (err) {
+        console.error(err);
+        showMsg("error", "Server error. Please try again.");
+      } finally {
+        setBusy(false);
+      }
+    };
+
+    // LOGIN + REDIRECT
+    $("loginBtn").onclick = async () => {
+      clearMsg();
+      const email = $("loginEmail").value.trim();
+      const password = $("loginPassword").value;
+
+      if (!email || !password) {
+        showMsg("error", "Email and password are required.");
+        return;
+      }
+
+      setBusy(true);
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.token) {
+          showMsg("error", data.error || "Invalid credentials.");
+          setBusy(false);
+          return;
+        }
+
+        setToken(data.token);
+        showMsg("ok", "Welcome back. Redirecting…");
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 600);
+
+      } catch (err) {
+        console.error(err);
+        showMsg("error", "Server connection failed.");
+      } finally {
+        setBusy(false);
+      }
+    };
+  </script>
+</body>
+</html>

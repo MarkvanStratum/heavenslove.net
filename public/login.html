@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign In — Heaven’s Love</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-heaven: #fdfcfb; 
+      --marble: #ffffff;
+      --gold: #c5a059;
+      --blue: #2c3e50;
+      --text: #33302c;
+      --border: rgba(197, 160, 89, 0.25);
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0; padding: 0;
+      color: var(--text);
+      background-color: var(--bg-heaven);
+      background-image: radial-gradient(circle at 50% 0%, rgba(197, 160, 89, 0.1), transparent 50%);
+      font-family: "EB Garamond", serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      padding: 40px;
+      background: var(--marble);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    .logo { 
+      width: 60px; height: 60px; border: 2px solid var(--gold); 
+      border-radius: 50%; display: grid; place-items: center; 
+      font-family: "Cinzel"; color: var(--gold); font-size: 24px; 
+      margin: 0 auto 20px;
+    }
+
+    h1 { font-family: "Cinzel"; font-size: 22px; color: var(--blue); margin-bottom: 5px; text-transform: uppercase; }
+    p.subtitle { margin: 0 0 30px; font-size: 16px; color: var(--gold); font-style: italic; }
+
+    label { display: block; text-align: left; font-family: "Cinzel"; font-size: 12px; color: var(--blue); margin-bottom: 5px; }
+    input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; outline: none; transition: 0.3s; }
+    input:focus { border-color: var(--gold); box-shadow: 0 0 5px rgba(197, 160, 89, 0.2); }
+
+    .btn { 
+      padding: 14px; border-radius: 6px; font-family: "Cinzel"; cursor: pointer; 
+      border: 1px solid var(--gold); background: var(--gold); color: white; 
+      width: 100%; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+      transition: 0.3s;
+    }
+    .btn:hover { background: #b08e4a; transform: translateY(-1px); }
+
+    .footer-links { margin-top: 25px; font-size: 14px; color: #888; }
+    .footer-links a { color: var(--gold); text-decoration: none; font-weight: bold; }
+    
+    .msg { margin-top: 15px; font-size: 14px; padding: 10px; border-radius: 4px; display: none; }
+    .msg.err { display: block; background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
+  </style>
+</head>
+
+<body>
+  <div class="login-card">
+    <div class="logo">†</div>
+    <h1>Heaven’s Love</h1>
+    <p class="subtitle">Enter in Love and Peace</p>
+
+    <div id="errorBox" class="msg err"></div>
+
+    <form id="loginForm">
+      <label for="email">Email Address</label>
+      <input id="email" type="email" placeholder="you@example.com" required />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="••••••••" required />
+
+      <button type="submit" class="btn" id="loginBtn">Sign In</button>
+    </form>
+
+    <div class="footer-links">
+      Don't have an account? <a href="/index.html">Join us today</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorBox = document.getElementById('errorBox');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      errorBox.style.display = 'none';
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          // Success: Save token and redirect to main chat
+          localStorage.setItem("token", data.token);
+          window.location.href = "/"; 
+        } else {
+          // Failure: Show error from server
+          errorBox.textContent = data.error || "Login failed. Please check your credentials.";
+          errorBox.style.display = 'block';
+        }
+      } catch (err) {
+        errorBox.textContent = "Connection error. Please try again later.";
+        errorBox.style.display = 'block';
+      }
+    };
+  </script>
+</body>
+</html>
