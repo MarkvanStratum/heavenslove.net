@@ -232,11 +232,12 @@ app.post("/api/create-payment-intent", authenticateToken, async (req, res) => {
         const email = req.user.email;
         const userId = req.user.id;
 
-        const amounts = {
-            'god': 2995,
-            'all': 3595,
-            'lifetime': 4995
-        };
+        // Change these values (lines ~227)
+const amounts = {
+    'god': 3595,      // Was 2995 ($29.95 -> $35.95)
+    'all': 4395,      // Was 3595 ($35.95 -> $43.95)
+    'lifetime': 5995  // Was 4995 ($49.95 -> $59.95)
+};
 
         const amount = amounts[plan];
 
@@ -271,16 +272,17 @@ app.post("/api/create-checkout", authenticateToken, async (req, res) => {
 		let amount;
 		let name;
 
-		if (plan === "god") {
-			amount = 2995;
-			name = "God Access (30 days)";
-		} else if (plan === "all") {
-			amount = 3595;
-			name = "Full Access (30 days)";
-		} else if (plan === "lifetime") {
-			amount = 4995;
-			name = "Lifetime Access";
-		} else {
+		// Change these values (lines ~260)
+if (plan === "god") {
+    amount = 3595; // Updated
+    name = "God Access (30 days)";
+} else if (plan === "all") {
+    amount = 4395; // Updated
+    name = "Full Access (30 days)";
+} else if (plan === "lifetime") {
+    amount = 5995; // Updated
+    name = "Lifetime Access";
+} else {
 			return res.status(400).json({ error: "Invalid plan" });
 		}
 
