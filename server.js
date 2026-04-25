@@ -35,16 +35,11 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 app.use(cors());
 
-// JSON parser FIRST
-app.use(express.json());
-
-// Only special-case webhook AFTER
 app.use((req, res, next) => {
 	if (req.originalUrl === "/webhook") {
-		express.raw({ type: "application/json" })(req, res, next);
-	} else {
-		next();
+		return next();
 	}
+	express.json()(req, res, next);
 });
 
 // THEN routes
@@ -554,7 +549,6 @@ app.get("/api/messages/:characterId", authenticateToken, async (req, res) => {
 // STRIPE WEBHOOK
 //--------------------------------------------
 
-// UPDATED: Webhook to handle PaymentIntents and Plan persistence
 app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
     const sig = req.headers["stripe-signature"];
     let event;
@@ -567,39 +561,38 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
     }
 
     async function applyPlan(plan, userId, email) {
-    let expiresAt = null;
-    let isLifetime = false;
+        let expiresAt = null;
+        let isLifetime = false;
 
-    if (plan === '2995' || plan === '3595') {
-        const date = new Date();
-        date.setDate(date.getDate() + 30);
-        expiresAt = date;
-        isLifetime = false;
-    } else if (plan === '4995') {
-        expiresAt = null;
-        isLifetime = true;
-    }
-
-    try {
-        if (userId) {
-            await pool.query(
-                "UPDATE users SET plan = $1, expires_at = $2, lifetime = $3, messages_sent = 0 WHERE id = $4",
-                [plan, expiresAt, isLifetime, userId]
-            );
-        } else if (email) {
-            // Fix for the database query: using email to find user
-            await pool.query(
-                "UPDATE users SET plan = $1, expires_at = $2, lifetime = $3, messages_sent = 0 WHERE email = $4",
-                [plan, expiresAt, isLifetime, email]
-            );
+        if (plan === "god" || plan === "all") {
+            const date = new Date();
+            date.setDate(date.getDate() + 30);
+            expiresAt = date;
+            isLifetime = false;
+        } else if (plan === "lifetime") {
+            expiresAt = null;
+            isLifetime = true;
         }
-        console.log(`✅ Plan ${plan} applied to ${email || userId}`);
-    } catch (err) {
-        console.error("❌ Error applying plan:", err);
-    }
-}
 
-    // PaymentIntent flow (THIS is what checkout.html uses)
+        try {
+            if (userId) {
+                await pool.query(
+                    "UPDATE users SET plan = $1, expires_at = $2, lifetime = $3, messages_sent = 0 WHERE id = $4",
+                    [plan, expiresAt, isLifetime, userId]
+                );
+            } else if (email) {
+                await pool.query(
+                    "UPDATE users SET plan = $1, expires_at = $2, lifetime = $3, messages_sent = 0 WHERE email = $4",
+                    [plan, expiresAt, isLifetime, email]
+                );
+            }
+
+            console.log(`✅ Plan ${plan} applied to ${email || userId}`);
+        } catch (err) {
+            console.error("❌ Error applying plan:", err);
+        }
+    }
+
     if (event.type === "payment_intent.succeeded") {
         const paymentIntent = event.data.object;
         const plan = paymentIntent.metadata && paymentIntent.metadata.plan;
@@ -608,24 +601,23 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
 
         console.log("💳 payment_intent.succeeded", { plan, email, userId });
 
-        // Check if user exists. If not, create them.
         const userCheck = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
-        
+
         if (userCheck.rows.length === 0 && email) {
-            const tempPassword = crypto.randomBytes(8).toString('hex');
+            const tempPassword = crypto.randomBytes(8).toString("hex");
             const hashed = await bcrypt.hash(tempPassword, 10);
-            
+
             await pool.query(
                 "INSERT INTO users (email, password, plan, lifetime, messages_sent) VALUES ($1, $2, $3, $4, 0)",
-                [email, hashed, plan, plan === '4995']
+                [email, hashed, plan, plan === "lifetime"]
             );
+
             console.log(`👤 Guest User Created: ${email}`);
         }
 
         await applyPlan(plan, userId, email);
     }
 
-    // Checkout flow (if you ever use /api/create-checkout)
     if (event.type === "checkout.session.completed") {
         const session = event.data.object;
         const plan = session.metadata && session.metadata.plan;
@@ -641,6 +633,8 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
 
     res.json({ received: true });
 });
+
+
 
 app.get("/", (req, res) => {
 	res.send(`
