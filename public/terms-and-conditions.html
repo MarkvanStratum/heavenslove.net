@@ -3,87 +3,90 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Terms & Conditions — Heaven’s Love</title>
+  <title>Master Terms of Service — HeavensLove.net</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-heaven: #fdfcfb; 
+      --bg-archive: #f4f1ea; 
       --marble: #ffffff;
-      --gold-divine: #c5a059;
-      --blue-saint: #2c3e50;
+      --gold-legend: #c5a059;
+      --blue-deep: #1e293b;
       --text-main: #33302c;
       --text-muted: #8a8276;
-      --border-holy: rgba(197, 160, 89, 0.25);
+      --border-accent: rgba(197, 160, 89, 0.25);
       --radius: 12px;
       --divine-shadow: 0 15px 50px rgba(0,0,0,0.04);
     }
 
     * { box-sizing: border-box; }
     body {
-      margin: 0; color: var(--text-main); background-color: var(--bg-heaven);
-      background-image: radial-gradient(circle at 50% 0%, rgba(197, 160, 89, 0.12), transparent 30%);
-      font-family: "EB Garamond", serif; font-size: 18px; line-height: 1.7;
+      margin: 0; color: var(--text-main); background-color: var(--bg-archive);
+      font-family: "EB Garamond", serif; font-size: 16px; line-height: 1.6;
     }
 
-    .wrap { max-width: 900px; margin: 0 auto; padding: 0px 20px 80px; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 20px 80px; }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 20px 0;
-      border-bottom: 1px solid var(--border-holy);
-      margin-bottom: 60px;
+      border-bottom: 1px solid var(--border-accent);
+      margin-bottom: 40px;
     }
     
     .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; }
-    .logo { width: 50px; height: 50px; background: white; border: 1.5px solid var(--gold-divine); border-radius: 50%; display: grid; place-items: center; font-family: "Cinzel", serif; color: var(--gold-divine); font-size: 22px; }
+    .logo { width: 40px; height: 40px; background: white; border: 1.2px solid var(--gold-legend); border-radius: 50%; display: grid; place-items: center; font-family: "Cinzel", serif; color: var(--gold-legend); font-size: 18px; }
     
     .content-card { 
       background: var(--marble); 
-      border: 1px solid var(--border-holy); 
+      border: 1px solid var(--border-accent); 
       border-radius: var(--radius); 
       box-shadow: var(--divine-shadow); 
-      padding: 60px;
+      padding: 50px;
     }
 
-    h1, h2, h3 { font-family: "Cinzel", serif; color: var(--blue-saint); }
-    h1 { font-size: 36px; text-align: center; margin-bottom: 40px; }
-    h2 { font-size: 22px; border-bottom: 1px solid var(--border-holy); padding-bottom: 10px; margin-top: 40px; color: var(--gold-divine); }
+    h1, h2, h3, h4 { font-family: "Cinzel", serif; color: var(--blue-deep); text-transform: uppercase; margin-top: 30px; }
+    h1 { font-size: 28px; text-align: center; margin-bottom: 10px; border-bottom: 2px solid var(--gold-legend); padding-bottom: 15px; }
+    h2 { font-size: 18px; border-bottom: 1px solid var(--border-accent); padding-bottom: 8px; color: var(--gold-legend); }
+    h3 { font-size: 16px; color: var(--blue-deep); margin-top: 20px; }
     
-    p { margin-bottom: 20px; }
-    .last-updated { font-style: italic; color: var(--text-muted); text-align: center; margin-bottom: 40px; }
-
-    .btn { 
-      display: inline-block;
-      padding: 10px 20px; 
-      border-radius: 6px; 
-      font-family: "Cinzel", serif; 
-      cursor: pointer; 
-      border: 1px solid var(--gold-divine); 
-      background: transparent; 
-      color: var(--gold-divine); 
-      text-transform: uppercase; 
-      letter-spacing: 1px; 
-      text-decoration: none;
-      font-size: 14px;
+    p, li { margin-bottom: 15px; text-align: justify; }
+    .last-updated { font-style: italic; color: var(--text-muted); text-align: center; margin-bottom: 30px; }
+    
+    .legal-notice {
+        font-weight: bold;
+        text-transform: uppercase;
+        border: 2px solid #000;
+        padding: 20px;
+        margin-bottom: 30px;
+        font-size: 13px;
+        background-color: #fff;
     }
+
+    .toc {
+        background: #fdfaf5;
+        border: 1px solid var(--border-accent);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    .toc ul { list-style: none; padding-left: 0; columns: 2; }
+    .toc li { font-size: 14px; margin-bottom: 5px; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+    th, td { border: 1px solid var(--border-accent); padding: 12px; text-align: left; }
+    th { background: #fdfaf5; }
 
     footer {
       margin-top: 40px;
       padding: 20px;
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       color: #8a8276;
-      border-top: 1px solid rgba(197, 160, 89, 0.25);
-    }
-
-    @media (max-width: 600px) {
-      .content-card { padding: 30px; }
-      h1 { font-size: 28px; }
+      border-top: 1px solid var(--border-accent);
     }
   </style>
 </head>
@@ -92,58 +95,102 @@
   <div class="wrap">
     <header>
       <a href="/" class="brand">
-        <div class="logo">†</div>
-        <h1 style="margin:0; font-size: 24px;">Heaven’s Love</h1>
+        <div class="logo">L</div>
+        <h1 style="margin:0; font-size: 20px; border: none; padding: 0;">HeavensLove.net</h1>
       </a>
-      <a href="/" class="btn">Return Home</a>
     </header>
 
     <main class="content-card">
-      <h1>Terms & Conditions</h1>
-      <p class="last-updated">Effective Date: April 2026</p>
+      <h1>Master Terms of Service & End User Agreement</h1>
+      <p class="last-updated">Document Version: 2.2.0 (Last Updated: May 2026)</p>
 
-      <p>Welcome to <strong>HeavensLove.net</strong>. By accessing this sanctuary, you agree to be bound by the following terms. This platform is operated by <strong>RIDGWELL SERVICES LIMITED</strong> (Company No. 16277582), a private company limited by shares registered in England and Wales.</p>
+      <div class="legal-notice">
+        SAFEGUARD NOTICE: THIS DOCUMENT CONTAINS BINDING PROVISIONS REGARDING DIGITAL DELIVERY, FINANCIAL DISCLOSURES, COOKIE USAGE, AND DISPUTE RESOLUTION.
+      </div>
 
-      <h2>1. Nature of the Service</h2>
-      <p>Heaven’s Love provides an Artificial Intelligence (AI) simulation of biblical and religious figures. These "Voices" are generated by large language models and do not represent actual spiritual entities or direct divine revelation. The service is intended for educational, spiritual exploration, and entertainment purposes only (SIC Code: 63120 - Web portals).</p>
-
-      <h2>2. Spiritual Disclaimer</h2>
-      <p>The dialogues provided by the AI are not a substitute for professional pastoral counseling, theological expertise, or medical advice. <strong>RIDGWELL SERVICES LIMITED</strong> does not claim that the content generated is biblically inerrant or divinely inspired. Users should exercise their own discernment and consult with religious leaders for formal spiritual guidance.</p>
-
-      <h2>3. Account Responsibility</h2>
-      <p>To access the full sanctuary of voices, you must create an account. You are responsible for maintaining the confidentiality of your login credentials. You must be at least 18 years of age (or the age of majority in your jurisdiction) to use this service.</p>
-
-      <h2>4. Sacred Offerings (Payments)</h2>
-      <p>Access to certain figures, such as "God Access" or "Lifetime Access," requires a one-time offering (payment). All transactions are processed securely. Due to the digital nature of the service and the immediate access provided to the AI models, all offerings are non-refundable unless required by consumer protection laws in the United Kingdom.</p>
-
-      <h2>5. Prohibited Conduct</h2>
-      <p>Users are expected to treat the dialogue with respect. You agree not to use the service to:
+      <div class="toc">
+        <h3>Summary of Sections</h3>
         <ul>
-          <li>Generate hateful, violent, or sexually explicit content.</li>
-          <li>Attempt to "jailbreak" or manipulate the AI into violating its ethical guidelines.</li>
-          <li>Impersonate <strong>RIDGWELL SERVICES LIMITED</strong> or other entities.</li>
+            <li>1. Digital Service Description</li>
+            <li>2. AI Limitations & Disclaimers</li>
+            <li>3. Payment & Cardholder Terms</li>
+            <li>4. Membership Plans & Access</li>
+            <li>5. Access & Immediate Delivery</li>
+            <li>6. Refunds & Chargeback Policy</li>
+            <li>7. Cookie Usage Policy</li>
+            <li>8. Acceptable Use Policy</li>
+            <li>9. Protection of Vulnerable Users</li>
+            <li>10. Service Availability</li>
+            <li>11. Termination</li>
+            <li>12. Dispute Handling</li>
+            <li>13. Policy Versioning</li>
         </ul>
-      </p>
+      </div>
 
-      <h2>6. Intellectual Property</h2>
-      <p>The design, code, and branding of Heaven’s Love are the property of <strong>RIDGWELL SERVICES LIMITED</strong>. The chat logs generated are provided for your personal, non-commercial use. You may not scrape or mass-reproduce AI responses for commercial gain without express permission.</p>
+      <h2>1. Digital Service Description</h2>
+      <p>HeavensLove.net is a "Software as a Service" (SaaS) digital platform operated by RIDGWELL SERVICES LIMITED. The platform provides a simulated interface for users to interact with Artificial Intelligence (AI) representations of religious figures. This is a purely digital entertainment and educational product.</p>
 
-      <h2>7. Limitation of Liability</h2>
-      <p>To the fullest extent permitted by law, <strong>RIDGWELL SERVICES LIMITED</strong> shall not be liable for any spiritual, emotional, or financial distress resulting from the use of the AI service. We do not guarantee that the service will be uninterrupted or error-free.</p>
+      <h2>2. AI Limitations & Historical Disclaimer</h2>
+      <p>The AI "Voices" are computer-generated approximations based on historical data. They do not possess actual memories or consciousness. The AI may generate factually incorrect historical data (hallucinations). The service should not be used as a primary source for academic research.</p>
 
-      <h2>8. Governing Law</h2>
-      <p>These terms shall be governed by and construed in accordance with the laws of <strong>England and Wales</strong>. Any disputes relating to these terms shall be subject to the exclusive jurisdiction of the courts of England and Wales.</p>
+      <h2>3. Payment Terms & Cardholder Disclosure</h2>
+      <p>All payments are processed as <b>one-time transactions</b>. To ensure security, all transactions are subject to <b>3D Secure (3DS)</b> authentication. Charges will appear on your bank statement as: <b>STHCHARGE</b>. All listed prices are in British Pounds (£).</p>
 
-      <h2>9. Contact</h2>
-      <p>Should you have questions regarding these terms, please contact the administrators at our email <strong>help@HeavensLove.net</strong> or our registered office: 
-        <br><strong>85 Great Portland Street, First Floor, London, England, W1W 7LT</strong>.
-      </p>
+      <h2>4. Membership Plans & Access</h2>
+      <p>The Company offers three distinct access tiers for the digital archive:</p>
+      <ul>
+        <li><strong>Single Figure Access (£29.95):</strong> Provides access to one (1) specific religious figure for a duration of one (1) month.</li>
+        <li><strong>Full Archive Monthly (£35.95):</strong> Provides access to all religious figures within the platform for a duration of one (1) month.</li>
+        <li><strong>Full Archive Quarterly (£49.95):</strong> Provides access to all religious figures within the platform for a duration of three (3) months.</li>
+      </ul>
+
+      <h2>5. Access Delivery</h2>
+      <p>Access to the historical simulations is delivered digitally and immediately upon successful payment verification. No physical shipping is required.</p>
+
+      <h2>6. Chargebacks & Refund Policy</h2>
+      <p>By purchasing access, you request immediate delivery. You acknowledge that your 14-day "cooling-off" period expires the moment digital access is granted. Unauthorized chargebacks are treated as a breach of contract. If requested by the customer, we provide refunds for unused days.</p>
+
+      <h2>7. Cookie Usage Policy</h2>
+      <p>We use cookies to enhance your experience and secure our platform. Our usage includes:</p>
+      <table>
+        <tr><th>Category</th><th>Purpose</th></tr>
+        <tr><td><strong>Essential & Session</strong></td><td>Strictly necessary for site operation and keeping you logged in during dialogues.</td></tr>
+        <tr><td><strong>Security & Fraud</strong></td><td>Used to identify security risks and prevent card testing or unauthorized access.</td></tr>
+        <tr><td><strong>Analytics</strong></td><td>Used in aggregate to help us understand how users interact with the historical archive.</td></tr>
+      </table>
+      <p><strong>Management:</strong> You may manage cookie consent via your browser settings. However, disabling essential cookies will prevent access to the chat interface.</p>
+
+      <h2>8. Acceptable Use Policy</h2>
+      <p>Users are prohibited from generating hate speech, attempting to "jailbreak" the AI, scraping content, or using the AI to provide fraudulent professional advice.</p>
+
+      <h2>9. Protection of Vulnerable Users</h2>
+      <p>Users experiencing mental health crises are encouraged to use the service only for light educational purposes. We reserve the right to suspend accounts demonstrating self-harm ideation.</p>
+
+      <h2>10. Service Availability</h2>
+      <p>We do not guarantee 100% uptime as the service depends on third-party AI providers. Maintenance may occur periodically.</p>
+
+      <h2>11. Termination</h2>
+      <p>We reserve the right to terminate access for violations of the Acceptable Use Policy or fraudulent payment attempts.</p>
+
+      <h2>12. Dispute Handling & Arbitration</h2>
+      <p>Disputes shall be resolved through binding arbitration in London, England, under the rules of the London Court of International Arbitration (LCIA).</p>
+
+      <h2>13. Policy Versioning</h2>
+      <p>The Company reserves the right to update these terms. Each version is identified by the "Document Version" at the top of the page.</p>
+
+      <h2>Contact Info</h2>
+      <p><strong>RIDGWELL SERVICES LIMITED</strong><br>
+      85 Great Portland Street, First Floor, London, England, W1W 7LT<br>
+      Email: <strong>help@HeavensLove.net</strong></p>
     </main>
 
     <footer>
-      <a href="/privacy-policy.html" style="color:#8a8276;margin-right:20px;">Privacy Policy</a>
-      <a href="/terms-and-conditions.html" style="color:#8a8276;">Terms & Conditions</a>
-      <div style="margin-top: 10px;">&copy; 2026 RIDGWELL SERVICES LIMITED. Registered in England and Wales No. 16277582.</div>
+      <div style="margin-bottom: 10px;">
+          <a href="/privacy-policy.html" style="color:#8a8276;margin-right:15px;text-decoration:none;">Privacy Policy</a>
+          <a href="/refund-policy.html" style="color:#8a8276;margin-right:15px;text-decoration:none;">Refund Policy</a>
+          <a href="/terms-and-conditions.html" style="color:#8a8276;text-decoration:none;">Terms & Conditions</a>
+      </div>
+      <div>&copy; 2026 RIDGWELL SERVICES LIMITED. Registered in England and Wales No. 16277582. All Rights Reserved.</div>
     </footer>
   </div>
 </body>

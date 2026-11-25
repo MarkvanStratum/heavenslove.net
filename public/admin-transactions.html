@@ -1,0 +1,3420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speak to Heaven — Transaction Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    .page {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .header h1 { margin: 0 0 8px; font-size: 30px; }
+    .header p { margin: 0; color: #94a3b8; }
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    button, input, select { font: inherit; }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .primary-button { background: #2563eb; color: #fff; }
+    .secondary-button { background: #334155; color: #fff; }
+    .danger-button { background: #991b1b; color: #fff; }
+    button:hover { opacity: 0.9; }
+    .login-panel {
+      max-width: 520px;
+      margin: 80px auto;
+      padding: 28px;
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    }
+    .login-panel h2 { margin-top: 0; }
+    .login-panel p { color: #94a3b8; }
+    .login-row { display: flex; gap: 10px; margin-top: 18px; }
+    .login-row input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 8px;
+      padding: 11px 12px;
+    }
+    .error-message { margin-top: 14px; color: #fca5a5; min-height: 20px; }
+    .dashboard { display: none; }
+    .status-line { margin-bottom: 18px; color: #94a3b8; font-size: 14px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .card-label { color: #94a3b8; font-size: 13px; margin-bottom: 8px; }
+    .card-value { font-size: 28px; font-weight: 800; }
+    .filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr auto;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 16px;
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 12px;
+    }
+    .filters input, .filters select {
+      width: 100%;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 12px;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 1300px; }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #263244;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    tr:hover td { background: #172033; }
+    .mono { font-family: Consolas, Monaco, monospace; font-size: 12px; word-break: break-all; }
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .badge-success { background: #14532d; color: #bbf7d0; }
+    .badge-failed { background: #7f1d1d; color: #fecaca; }
+.badge-blocked {
+  background: #4c1d95;
+  color: #ddd6fe;
+}
+    .badge-created { background: #78350f; color: #fde68a; }
+    .badge-other { background: #334155; color: #e2e8f0; }
+    .empty-state { padding: 40px; text-align: center; color: #94a3b8; }
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 18px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  background: #334155;
+  color: #fff;
+}
+
+.tab-button.active {
+  background: #2563eb;
+}
+
+.view-hidden {
+  display: none !important;
+}
+
+.chargeback-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 16px;
+  background: #111827;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.chargeback-toolbar input[type="file"] {
+  max-width: 420px;
+  color: #e5e7eb;
+}
+
+.chargeback-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 16px;
+  background: #111827;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.chargeback-filters select,
+.chargeback-filters input {
+  width: 100%;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.chargeback-note {
+  color: #94a3b8;
+  font-size: 13px;
+  margin: -8px 0 18px;
+}
+    @media (max-width: 1100px) {
+      .cards { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+      .filters, .chargeback-filters { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .cards, .filters, .chargeback-filters { grid-template-columns: 1fr; }
+      .login-row { flex-direction: column; }
+      .header h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div id="loginPanel" class="login-panel">
+      <h2>Transaction Dashboard</h2>
+      <p>Enter the private admin password you added in Railway.</p>
+      <div class="login-row">
+        <input id="passwordInput" type="password" placeholder="Admin password" autocomplete="current-password" />
+        <button id="loginButton" class="primary-button">Open Dashboard</button>
+      </div>
+      <div id="loginError" class="error-message"></div>
+    </div>
+
+    <div id="dashboard" class="dashboard">
+      <div class="header">
+        <div>
+          <h1>Speak to Heaven Transactions</h1>
+          <p>Latest payment attempts and gateway results.</p>
+        </div>
+        <div class="header-actions">
+          <button id="refreshButton" class="primary-button">Refresh</button>
+
+<input
+  id="historicalTransactionFileInput"
+  type="file"
+  accept=".csv,text/csv"
+  multiple
+  style="display:none;"
+>
+
+<button
+  id="importHistoricalTransactionsButton"
+  class="secondary-button"
+>
+  Import Historical Transactions
+</button>
+
+<button id="downloadButton" class="secondary-button">Download CSV</button>
+<button id="downloadInvoicesButton" class="secondary-button">Download All Invoices</button>
+<button id="logoutButton" class="danger-button">Log out</button>
+        </div>
+      </div>
+
+      <div id="statusLine" class="status-line">Waiting for data...</div>
+<div class="tabs">
+  <button id="transactionsTabButton" class="tab-button active">Transactions</button>
+  <button id="chargebacksTabButton" class="tab-button">Chargebacks</button>
+  <button id="fraudTabButton" class="tab-button">Fraud</button>
+</div>
+
+<div id="transactionsView">
+
+      <div class="cards">
+        <div class="card"><div class="card-label">Total transactions</div><div id="totalCount" class="card-value">0</div></div>
+        <div class="card"><div class="card-label">Successful</div><div id="successfulCount" class="card-value">0</div></div>
+        <div class="card"><div class="card-label">Failed</div><div id="failedCount" class="card-value">0</div></div>
+        <div class="card"><div class="card-label">Pending / created</div><div id="pendingCount" class="card-value">0</div></div>
+        <div class="card"><div class="card-label">Approval rate</div><div id="approvalRate" class="card-value">0%</div></div>
+<div class="card"><div class="card-label">Gross revenue</div><div id="grossRevenue" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Estimated VAT</div><div id="estimatedVat" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Estimated processing fees (all types)</div><div id="transactionFees" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Authorization fees (estimated)</div><div id="authorizationFees" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Interchange (estimated)</div><div id="interchangeFees" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Transaction processing (estimated)</div><div id="processingFees" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Assessment (estimated)</div><div id="assessmentFees" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Cross-border (estimated)</div><div id="crossBorderFees" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Other settlement deductions (manual)</div><div id="otherDeductions" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Estimated payout after reserve</div><div id="estimatedPayout" class="card-value">£0.00</div></div>
+<div class="card"><div class="card-label">Net revenue</div><div id="netRevenue" class="card-value">£0.00</div></div>
+<div class="card">
+  <div class="card-label">Estimated reserve withheld (selected period)</div>
+  <div id="rollingReserve" class="card-value">£0.00</div>
+</div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-label">Fee assumptions — editable estimates, not Paystrax contractual rates. Percentage estimates are calibrated to the 2 Nov 2026 settlement. Manual deductions apply to the selected date filter only.</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px">
+          <label>Authorization per attempt (£) <input id="feeAuth" type="number" min="0" step="0.01" value="0.40" style="width:90px"></label>
+          <label>Interchange (%) <input id="feeInterchange" type="number" min="0" step="0.01" value="7.75" style="width:80px"></label>
+          <label>Transaction processing (%) <input id="feeProcessing" type="number" min="0" step="0.01" value="1.26" style="width:80px"></label>
+          <label>Assessment (%) <input id="feeAssessment" type="number" min="0" step="0.01" value="0.57" style="width:80px"></label>
+          <label>Cross-border (%) <input id="feeCrossBorder" type="number" min="0" step="0.01" value="0.88" style="width:80px"></label>
+          <label>Chargeback fees (£) <input id="feeChargeback" type="number" min="0" step="0.01" value="0" style="width:100px"></label>
+          <label>Chargeback principal (£) <input id="feeChargebackPrincipal" type="number" min="0" step="0.01" value="0" style="width:100px"></label>
+          <label>Wire fees (£) <input id="feeWire" type="number" min="0" step="0.01" value="0" style="width:90px"></label>
+          <label>Reserve withheld (%) <input id="feeReserve" type="number" min="0" max="100" step="0.1" value="10" style="width:80px"></label>
+        </div>
+        <p style="color:#94a3b8;font-size:12px;margin-bottom:0">Chargebacks and wire fees cannot be inferred from CRM transactions: enter actual amounts from a matching settlement. Do not add the same fees twice. Payout is an estimate, not a bank reconciliation; reserve releases, refunds and prior-period adjustments may differ. VAT is estimated separately and is not necessarily withheld by the processor.</p>
+      </div>
+      <div class="filters">
+        <input id="searchInput" type="text" placeholder="Search email, reference, BIN, last 4, reason..." />
+        <select id="statusFilter">
+          <option value="ALL">All statuses</option>
+          <option value="SUCCESSFUL">Successful</option>
+          <option value="FAILED">Failed</option>
+<option value="BLOCKED">Blocked</option>
+          <option value="CREATED">Created / pending</option>
+        </select>
+        <select id="planFilter"><option value="ALL">All plans</option></select>
+<select id="countryFilter">
+  <option value="ALL">All countries</option>
+</select>
+        <select id="dateFilter">
+  <option value="ALL">All dates</option>
+  <option value="TODAY" selected>Today</option>
+  <option value="YESTERDAY">Yesterday</option>
+  <option value="7_DAYS">Last 7 days</option>
+  <option value="30_DAYS">Last 30 days</option>
+  <option value="CUSTOM">Custom date range</option>
+</select>
+
+<input
+  id="startDateInput"
+  type="date"
+  aria-label="From date"
+  title="From date"
+/>
+
+<input
+  id="endDateInput"
+  type="date"
+  aria-label="To date"
+  title="To date"
+/>
+
+<button id="clearFiltersButton" class="secondary-button">Clear</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date and time</th>
+              <th>Email</th>
+              <th>Amount</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Reason</th>
+              <th>BIN</th>
+<th>Country</th>
+<th>Card</th>
+<th>Last 4</th>
+              <th>Affiliate</th>
+<th>Source</th>
+<th>Sub ID</th>
+<th>Reference</th>
+<th>Xolvis UUID</th>
+<th>Refund</th>
+            </tr>
+          </thead>
+          <tbody id="transactionsBody"></tbody>
+        </table>
+        <div id="emptyState" class="empty-state" style="display:none;">No transactions match the selected filters.</div>
+            </div>
+    </div>
+
+<div id="chargebacksView" class="view-hidden">
+
+  <div class="chargeback-toolbar">
+    <input
+      id="chargebackFileInput"
+      type="file"
+      accept=".csv,text/csv"
+    />
+
+    <button
+      id="uploadChargebacksButton"
+      class="primary-button"
+    >
+      Upload chargeback CSV
+    </button>
+
+    <button
+      id="refreshChargebacksButton"
+      class="secondary-button"
+    >
+      Refresh chargebacks
+    </button>
+  </div>
+
+  <div
+    id="chargebackStatusLine"
+    class="status-line"
+  >
+    No chargeback file uploaded yet.
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Successful sales</div>
+      <div id="cbSuccessfulSales" class="card-value">0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Chargebacks</div>
+      <div id="cbCount" class="card-value">0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Chargeback rate</div>
+      <div id="cbRate" class="card-value">0%</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Chargeback amount</div>
+      <div id="cbAmount" class="card-value">£0.00</div>
+    </div>
+  </div>
+
+  <div class="chargeback-filters">
+
+    <select id="cbGroupBy">
+      <option value="card_bin">Rows: BIN</option>
+      <option value="card_country">Rows: Country</option>
+      <option value="affiliate_source">Rows: Affiliate</option>
+      <option value="plan">Rows: Plan</option>
+      <option value="card_type">Rows: Card type</option>
+      <option value="reason_code">Rows: Reason</option>
+      <option value="network">Rows: Network</option>
+    </select>
+
+    <select id="cbSortBy">
+      <option value="rate_desc">Sort: Chargeback rate</option>
+      <option value="chargebacks_desc">Sort: Chargebacks</option>
+      <option value="amount_desc">Sort: Chargeback amount</option>
+      <option value="sales_desc">Sort: Successful sales</option>
+      <option value="group_asc">Sort: Group name</option>
+    </select>
+
+    <select id="cbCountryFilter">
+      <option value="ALL">All countries</option>
+    </select>
+
+    <select id="cbAffiliateFilter">
+      <option value="ALL">All affiliates</option>
+    </select>
+
+    <select id="cbPlanFilter">
+      <option value="ALL">All plans</option>
+    </select>
+
+    <select id="cbCardTypeFilter">
+      <option value="ALL">All card types</option>
+    </select>
+
+    <select id="cbReasonFilter">
+      <option value="ALL">All reasons</option>
+    </select>
+
+    <select id="cbNetworkFilter">
+      <option value="ALL">All networks</option>
+    </select>
+
+    <input
+      id="cbStartDate"
+      type="date"
+      title="Chargeback from date"
+      aria-label="Chargeback from date"
+    />
+
+    <input
+      id="cbEndDate"
+      type="date"
+      title="Chargeback to date"
+      aria-label="Chargeback to date"
+    />
+
+    <button
+      id="cbClearFilters"
+      class="secondary-button"
+    >
+      Clear chargeback filters
+    </button>
+
+  </div>
+
+  <div class="chargeback-note">
+    The rate is chargebacks divided by successful sales for the same selected traffic. BIN is the default row grouping.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th id="cbGroupHeader">BIN</th>
+          <th>Successful sales</th>
+          <th>Chargebacks</th>
+          <th>Chargeback rate</th>
+          <th>Chargeback amount</th>
+          <th>Average CB amount</th>
+        </tr>
+      </thead>
+
+      <tbody id="chargebackPivotBody"></tbody>
+    </table>
+
+    <div
+      id="chargebackEmptyState"
+      class="empty-state"
+      style="display:none;"
+    >
+      No chargeback data matches the selected filters.
+    </div>
+  </div>
+
+</div>
+
+<div id="fraudView" class="view-hidden">
+
+  <div class="chargeback-toolbar">
+
+    <input
+  id="fraudFileInput"
+  type="file"
+  accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  multiple
+  style="display:none;"
+/>
+
+    <button
+      id="uploadFraudButton"
+      class="primary-button"
+    >
+      Upload fraud Excel
+    </button>
+
+    <button
+      id="refreshFraudButton"
+      class="secondary-button"
+    >
+      Refresh fraud
+    </button>
+
+  </div>
+
+  <div
+    id="fraudStatusLine"
+    class="status-line"
+  >
+    No fraud report uploaded yet.
+  </div>
+
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-label">
+        Successful sales
+      </div>
+
+      <div
+        id="fraudSuccessfulSales"
+        class="card-value"
+      >
+        0
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-label">
+        Fraud cases
+      </div>
+
+      <div
+        id="fraudCount"
+        class="card-value"
+      >
+        0
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-label">
+        Fraud rate
+      </div>
+
+      <div
+        id="fraudRate"
+        class="card-value"
+      >
+        0%
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-label">
+        Fraud amount
+      </div>
+
+      <div
+        id="fraudAmount"
+        class="card-value"
+      >
+        £0.00
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="chargeback-filters">
+
+    <select id="fraudGroupBy">
+      <option value="card_bin">
+        Rows: BIN
+      </option>
+
+      <option value="card_country">
+        Rows: Country
+      </option>
+
+      <option value="affiliate_source">
+        Rows: Affiliate
+      </option>
+
+      <option value="plan">
+        Rows: Plan
+      </option>
+
+      <option value="card_type">
+        Rows: Card type
+      </option>
+
+      <option value="fraud_type">
+        Rows: Fraud type
+      </option>
+    </select>
+
+
+    <select id="fraudSortBy">
+      <option value="rate_desc">
+        Sort: Fraud rate
+      </option>
+
+      <option value="fraud_desc">
+        Sort: Fraud cases
+      </option>
+
+      <option value="amount_desc">
+        Sort: Fraud amount
+      </option>
+
+      <option value="sales_desc">
+        Sort: Successful sales
+      </option>
+
+      <option value="group_asc">
+        Sort: Group name
+      </option>
+    </select>
+
+
+    <select id="fraudCountryFilter">
+      <option value="ALL">
+        All countries
+      </option>
+    </select>
+
+
+    <select id="fraudAffiliateFilter">
+      <option value="ALL">
+        All affiliates
+      </option>
+    </select>
+
+
+    <select id="fraudPlanFilter">
+      <option value="ALL">
+        All plans
+      </option>
+    </select>
+
+
+    <select id="fraudCardTypeFilter">
+      <option value="ALL">
+        All card types
+      </option>
+    </select>
+
+
+    <select id="fraudTypeFilter">
+      <option value="ALL">
+        All fraud types
+      </option>
+    </select>
+
+
+    <input
+      id="fraudStartDate"
+      type="date"
+      title="Fraud from date"
+      aria-label="Fraud from date"
+    />
+
+
+    <input
+      id="fraudEndDate"
+      type="date"
+      title="Fraud to date"
+      aria-label="Fraud to date"
+    />
+
+
+    <button
+      id="fraudClearFilters"
+      class="secondary-button"
+    >
+      Clear fraud filters
+    </button>
+
+  </div>
+
+
+  <div class="chargeback-note">
+    Fraud rate is fraud-reported transactions divided by successful sales for the same selected traffic. BIN is the default row grouping.
+  </div>
+
+
+  <div class="table-wrap">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th id="fraudGroupHeader">
+            BIN
+          </th>
+
+          <th>
+            Successful sales
+          </th>
+
+          <th>
+            Fraud cases
+          </th>
+
+          <th>
+            Fraud rate
+          </th>
+
+          <th>
+            Fraud amount
+          </th>
+
+          <th>
+            Average fraud amount
+          </th>
+        </tr>
+      </thead>
+
+      <tbody id="fraudPivotBody"></tbody>
+
+    </table>
+
+
+    <div
+      id="fraudEmptyState"
+      class="empty-state"
+      style="display:none;"
+    >
+      No fraud data matches the selected filters.
+    </div>
+
+  </div>
+
+</div>
+
+    </div>
+  </div>
+
+
+
+  <script>    const API_URL = "/api/admin/transactions";
+const CHARGEBACKS_API_URL = "/api/admin/chargebacks";
+const CHARGEBACK_UPLOAD_URL = "/api/admin/chargebacks/upload";
+
+const FRAUD_API_URL = "/api/admin/fraud";
+const FRAUD_UPLOAD_URL = "/api/admin/fraud/upload";
+
+const HISTORICAL_TRANSACTION_IMPORT_URL =
+  "/api/admin/transactions/import";
+
+const INVOICES_DOWNLOAD_URL = "/api/admin/receipts/download-all";
+    let adminPassword = "";
+    let allTransactions = [];
+let filteredTransactions = [];
+let allChargebacks = [];
+let allFraudReports = [];
+let refreshTimer = null;
+
+    const byId = id => document.getElementById(id);
+    const loginPanel = byId("loginPanel");
+    const dashboard = byId("dashboard");
+    const passwordInput = byId("passwordInput");
+    const loginButton = byId("loginButton");
+    const loginError = byId("loginError");
+    const refreshButton = byId("refreshButton");
+
+const historicalTransactionFileInput =
+  byId("historicalTransactionFileInput");
+
+const importHistoricalTransactionsButton =
+  byId("importHistoricalTransactionsButton");
+
+const downloadButton = byId("downloadButton");
+const downloadInvoicesButton = byId("downloadInvoicesButton");
+const logoutButton = byId("logoutButton");
+    const clearFiltersButton = byId("clearFiltersButton");
+    const searchInput = byId("searchInput");
+    const statusFilter = byId("statusFilter");
+    const planFilter = byId("planFilter");
+const countryFilter = byId("countryFilter");
+    const dateFilter = byId("dateFilter");
+const startDateInput = byId("startDateInput");
+const endDateInput = byId("endDateInput");
+    const statusLine = byId("statusLine");
+    const transactionsBody = byId("transactionsBody");
+    const emptyState = byId("emptyState");
+    const totalCount = byId("totalCount");
+    const successfulCount = byId("successfulCount");
+    const failedCount = byId("failedCount");
+    const pendingCount = byId("pendingCount");
+    const approvalRate = byId("approvalRate");
+const grossRevenue = byId("grossRevenue");
+const estimatedVat = byId("estimatedVat");
+const transactionFeesDisplay = byId("transactionFees");
+const netRevenue = byId("netRevenue");
+const rollingReserve =
+    byId("rollingReserve");
+const transactionsTabButton = byId("transactionsTabButton");
+const chargebacksTabButton = byId("chargebacksTabButton");
+const fraudTabButton = byId("fraudTabButton");
+
+const transactionsView = byId("transactionsView");
+const chargebacksView = byId("chargebacksView");
+const fraudView = byId("fraudView");
+
+const chargebackFileInput = byId("chargebackFileInput");
+const uploadChargebacksButton = byId("uploadChargebacksButton");
+const refreshChargebacksButton = byId("refreshChargebacksButton");
+const chargebackStatusLine = byId("chargebackStatusLine");
+
+const cbSuccessfulSales = byId("cbSuccessfulSales");
+const cbCount = byId("cbCount");
+const cbRate = byId("cbRate");
+const cbAmount = byId("cbAmount");
+
+const cbGroupBy = byId("cbGroupBy");
+const cbSortBy = byId("cbSortBy");
+
+const cbCountryFilter = byId("cbCountryFilter");
+const cbAffiliateFilter = byId("cbAffiliateFilter");
+const cbPlanFilter = byId("cbPlanFilter");
+const cbCardTypeFilter = byId("cbCardTypeFilter");
+const cbReasonFilter = byId("cbReasonFilter");
+const cbNetworkFilter = byId("cbNetworkFilter");
+
+const cbStartDate = byId("cbStartDate");
+const cbEndDate = byId("cbEndDate");
+
+const cbClearFilters = byId("cbClearFilters");
+
+const cbGroupHeader = byId("cbGroupHeader");
+const chargebackPivotBody = byId("chargebackPivotBody");
+const chargebackEmptyState = byId("chargebackEmptyState");
+const fraudFileInput = byId("fraudFileInput");
+const uploadFraudButton = byId("uploadFraudButton");
+const refreshFraudButton = byId("refreshFraudButton");
+const fraudStatusLine = byId("fraudStatusLine");
+
+const fraudSuccessfulSales = byId("fraudSuccessfulSales");
+const fraudCount = byId("fraudCount");
+const fraudRate = byId("fraudRate");
+const fraudAmount = byId("fraudAmount");
+
+const fraudGroupBy = byId("fraudGroupBy");
+const fraudSortBy = byId("fraudSortBy");
+
+const fraudCountryFilter = byId("fraudCountryFilter");
+const fraudAffiliateFilter = byId("fraudAffiliateFilter");
+const fraudPlanFilter = byId("fraudPlanFilter");
+const fraudCardTypeFilter = byId("fraudCardTypeFilter");
+const fraudTypeFilter = byId("fraudTypeFilter");
+
+const fraudStartDate = byId("fraudStartDate");
+const fraudEndDate = byId("fraudEndDate");
+
+const fraudClearFilters = byId("fraudClearFilters");
+
+const fraudGroupHeader = byId("fraudGroupHeader");
+const fraudPivotBody = byId("fraudPivotBody");
+const fraudEmptyState = byId("fraudEmptyState");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function normalizeStatus(transaction) {
+  const attempt =
+    String(transaction.attempt_status || "").toUpperCase();
+
+  const payment =
+  String(transaction.payment_status || "").toUpperCase();
+
+const gatewayStatus =
+  String(transaction.gateway_status || "").toUpperCase();
+
+if (
+  attempt === "BLOCKED" ||
+  payment === "BLOCKED" ||
+  gatewayStatus === "CARD_BIN_BLOCKED" ||
+  gatewayStatus === "CARD_RETRY_LIMIT_REACHED" ||
+  gatewayStatus === "CARD_TYPE_NOT_SUPPORTED"
+) {
+  return "BLOCKED";
+}
+
+  if (
+    attempt === "SUCCESSFUL" ||
+    payment === "FINISHED" ||
+    payment === "OK" ||
+    payment === "SUCCESSFUL"
+  ) {
+    return "SUCCESSFUL";
+  }
+
+  if (
+    attempt === "FAILED" ||
+    payment === "ERROR" ||
+    payment === "FAILED" ||
+    payment === "DECLINED"
+  ) {
+    return "FAILED";
+  }
+
+  return "CREATED";
+}
+
+    function getStatusBadge(status) {
+      if (status === "SUCCESSFUL") return '<span class="badge badge-success">Successful</span>';
+      if (status === "FAILED") return '<span class="badge badge-failed">Failed</span>';
+if (status === "BLOCKED") return '<span class="badge badge-blocked">Blocked</span>';
+      if (status === "CREATED") return '<span class="badge badge-created">Created</span>';
+      return '<span class="badge badge-other">' + escapeHtml(status) + "</span>";
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+    }
+
+    function formatAmount(value) {
+      const amount = Number(value);
+      return Number.isNaN(amount) ? "-" : "£" + amount.toFixed(2);
+    }
+
+    function isWithinDateFilter(
+  dateValue,
+  filterValue,
+  startDateValue,
+  endDateValue
+) {
+  const transactionDate = new Date(dateValue);
+
+  if (Number.isNaN(transactionDate.getTime())) {
+    return false;
+  }
+
+  const now = new Date();
+
+  if (filterValue === "TODAY") {
+    return (
+      transactionDate.getFullYear() === now.getFullYear() &&
+      transactionDate.getMonth() === now.getMonth() &&
+      transactionDate.getDate() === now.getDate()
+    );
+  }
+
+if (filterValue === "YESTERDAY") {
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  return (
+    transactionDate.getFullYear() === yesterday.getFullYear() &&
+    transactionDate.getMonth() === yesterday.getMonth() &&
+    transactionDate.getDate() === yesterday.getDate()
+  );
+}
+
+  if (filterValue === "7_DAYS") {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return transactionDate >= sevenDaysAgo;
+  }
+
+  if (filterValue === "30_DAYS") {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    return transactionDate >= thirtyDaysAgo;
+  }
+
+  if (filterValue === "CUSTOM") {
+    if (startDateValue) {
+      const startDate =
+        new Date(startDateValue + "T00:00:00");
+
+      if (transactionDate < startDate) {
+        return false;
+      }
+    }
+
+    if (endDateValue) {
+      const endDate =
+        new Date(endDateValue + "T23:59:59.999");
+
+      if (transactionDate > endDate) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return true;
+}
+
+    async function loadTransactions(showLoginError = false) {
+      statusLine.textContent = "Loading transactions...";
+
+      try {
+        const response = await fetch(API_URL, {
+          headers: { "x-admin-password": adminPassword },
+          cache: "no-store"
+        });
+
+        let data = {};
+        try { data = await response.json(); } catch {}
+
+        if (response.status === 401) throw new Error("Incorrect admin password");
+        if (!response.ok || data.success !== true) throw new Error(data.error || "Could not load transactions");
+
+        allTransactions = Array.isArray(data.transactions) ? data.transactions : [];
+        loginError.textContent = "";
+        loginPanel.style.display = "none";
+        dashboard.style.display = "block";
+
+        populatePlanFilter();
+populateCountryFilter();
+applyFilters();
+        statusLine.textContent = "Last refreshed: " + new Date().toLocaleTimeString();
+
+        if (!refreshTimer) {
+          refreshTimer = setInterval(() => loadTransactions(false), 10000);
+        }
+      } catch (error) {
+        statusLine.textContent = "Could not load transactions.";
+        if (showLoginError) loginError.textContent = error.message;
+        else console.error(error);
+      }
+    }
+
+    function populatePlanFilter() {
+      const currentValue = planFilter.value;
+      const plans = [...new Set(allTransactions.map(t => String(t.plan || "").trim()).filter(Boolean))].sort();
+
+      planFilter.innerHTML = '<option value="ALL">All plans</option>';
+      for (const plan of plans) {
+        const option = document.createElement("option");
+        option.value = plan;
+        option.textContent = plan;
+        planFilter.appendChild(option);
+      }
+
+      if (plans.includes(currentValue)) planFilter.value = currentValue;
+    }
+
+function populateCountryFilter() {
+  const currentValue = countryFilter.value;
+
+  const countries = [
+    ...new Set(
+      allTransactions
+        .map(t => String(t.card_country || "").trim().toUpperCase())
+        .filter(Boolean)
+    )
+  ].sort();
+
+  countryFilter.innerHTML =
+    '<option value="ALL">All countries</option>';
+
+  for (const country of countries) {
+    const option = document.createElement("option");
+    option.value = country;
+    option.textContent = country;
+    countryFilter.appendChild(option);
+  }
+
+  if (countries.includes(currentValue)) {
+    countryFilter.value = currentValue;
+  }
+}
+
+    function applyFilters() {
+      const searchValue = searchInput.value.trim().toLowerCase();
+      const selectedStatus = statusFilter.value;
+      const selectedPlan = planFilter.value;
+const selectedCountry = countryFilter.value;
+const selectedDate = dateFilter.value;
+const selectedStartDate = startDateInput.value;
+const selectedEndDate = endDateInput.value;
+
+      filteredTransactions = allTransactions.filter(transaction => {
+        const status = normalizeStatus(transaction);
+        const searchable = [
+          transaction.email,
+          transaction.reference,
+          transaction.card_bin,
+          transaction.card_type,
+          transaction.last_four,
+          transaction.reason,
+          transaction.gateway_status,
+          transaction.payment_status,
+          transaction.attempt_status,
+          transaction.affiliate_source,
+transaction.traffic_source,
+transaction.sub_id,
+transaction.xolvis_uuid,
+transaction.plan
+        ].map(v => String(v || "").toLowerCase()).join(" ");
+
+        return (!searchValue || searchable.includes(searchValue)) &&
+       (selectedStatus === "ALL" || status === selectedStatus) &&
+       (selectedPlan === "ALL" || String(transaction.plan || "") === selectedPlan) &&
+       (
+         selectedCountry === "ALL" ||
+         String(transaction.card_country || "").trim().toUpperCase() === selectedCountry
+       ) &&
+       isWithinDateFilter(
+         transaction.created_at,
+         selectedDate,
+         selectedStartDate,
+         selectedEndDate
+       );
+      });
+
+      renderSummary();
+      renderTable();
+    }
+
+const VAT_RATES = {
+  GB: 20,
+
+  AT: 20,
+  BE: 21,
+  BG: 20,
+  HR: 25,
+  CY: 19,
+  CZ: 21,
+  DK: 25,
+  EE: 24,
+  FI: 25.5,
+  FR: 20,
+  DE: 19,
+  GR: 24,
+  HU: 27,
+  IE: 23,
+  IT: 22,
+  LV: 21,
+  LT: 21,
+  LU: 17,
+  MT: 18,
+  NL: 21,
+  PL: 23,
+  PT: 23,
+  RO: 21,
+  SK: 23,
+  SI: 22,
+  ES: 21,
+  SE: 25
+};
+
+function getVatRate(transaction) {
+  const country =
+    String(transaction.card_country || "")
+      .trim()
+      .toUpperCase();
+
+  return VAT_RATES[country] || 0;
+}
+
+function calculateVatIncluded(amount, vatRate) {
+  if (!vatRate) {
+    return 0;
+  }
+
+  return amount - amount / (1 + vatRate / 100);
+}
+    function isThreeDSExcluded(transaction) {
+  const combinedText = [
+    transaction.reason,
+    transaction.gateway_status,
+    transaction.payment_status,
+    transaction.attempt_status
+  ]
+    .map(value => String(value || "").toUpperCase())
+    .join(" ");
+
+  return (
+    combinedText.includes("3D SECURE") ||
+    combinedText.includes("3DS") ||
+combinedText.includes("TRANSACTION DECLINED BY AUTHORIZATION SYSTEM") ||
+    combinedText.includes("USER AUTHENTICATION FAILED") ||
+    combinedText.includes("AUTHENTICATION FAILED") ||
+    combinedText.includes("AUTHENTICATION PENDING") ||
+    combinedText.includes("CHALLENGE PENDING") ||
+    combinedText.includes("CHALLENGE CANCELLED") ||
+    combinedText.includes("CHALLENGE CANCELED") ||
+    combinedText.includes("AUTHENTICATION CANCELLED") ||
+    combinedText.includes("AUTHENTICATION CANCELED") ||
+combinedText.includes("NOT AUTHENTICATED BECAUSE THE ISSUER IS REJECTING AUTHENTICATION") ||
+combinedText.includes("TRANSACTION REJECTED BECAUSE CARDHOLDER AUTHENTICATION UNAVAILABLE") ||
+    combinedText.includes("CARDHOLDER CANCELLED") ||
+combinedText.includes("CARDHOLDER CANCELED") ||
+combinedText.includes("CANCELLED BY USER") ||
+combinedText.includes("CANCELED BY USER") ||
+combinedText.includes("USER CANCELLED") ||
+combinedText.includes("USER CANCELED")
+  );
+}
+
+document.querySelectorAll('[id^="feeAuth"], [id^="feeInterchange"], [id^="feeProcessing"], [id^="feeAssessment"], [id^="feeCrossBorder"], [id^="feeChargeback"], [id^="feeWire"], [id^="feeReserve"]').forEach(input => input.addEventListener("input", () => { if (typeof filteredTransactions !== "undefined") renderSummary(); }));
+function renderSummary() {
+  const total = filteredTransactions.length;
+
+  const successfulTransactions =
+    filteredTransactions.filter(
+      transaction =>
+        normalizeStatus(transaction) === "SUCCESSFUL"
+    );
+
+  const successful = successfulTransactions.length;
+
+  const blocked = filteredTransactions.filter(
+    transaction =>
+      normalizeStatus(transaction) === "BLOCKED"
+  ).length;
+
+  const threeDSExcluded = filteredTransactions.filter(
+    transaction =>
+      normalizeStatus(transaction) !== "BLOCKED" &&
+      isThreeDSExcluded(transaction)
+  ).length;
+
+  const failed = filteredTransactions.filter(
+    transaction =>
+      normalizeStatus(transaction) === "FAILED" &&
+      !isThreeDSExcluded(transaction)
+  ).length;
+
+  const pending = filteredTransactions.filter(
+    transaction =>
+      normalizeStatus(transaction) === "CREATED" &&
+      !isThreeDSExcluded(transaction)
+  ).length;
+
+  const completed = successful + failed;
+
+  const rate =
+    completed > 0
+      ? (successful / completed) * 100
+      : 0;
+
+  let grossAmount = 0;
+  let vatAmount = 0;
+
+  for (const transaction of successfulTransactions) {
+    const amount = Number(transaction.amount) || 0;
+    const vatRate = getVatRate(transaction);
+
+    grossAmount += amount;
+    vatAmount += calculateVatIncluded(
+      amount,
+      vatRate
+    );
+  }
+
+  const feeValue = (id, fallback = 0) => {
+    const input = document.getElementById(id);
+    const n = Number(input?.value);
+    return Number.isFinite(n) && n >= 0 ? n : fallback;
+  };
+  // A CRM row is not necessarily an acquirer-billable authorization.
+  // Keep the original non-blocked approximation until gateway-level fee events are available.
+  const billableTransactions = filteredTransactions.filter(t => normalizeStatus(t) !== "BLOCKED").length;
+  const authorizationFees = billableTransactions * feeValue("feeAuth", 0.40);
+  const interchangeFees = grossAmount * feeValue("feeInterchange") / 100;
+  const processingFees = grossAmount * feeValue("feeProcessing") / 100;
+  const assessmentFees = grossAmount * feeValue("feeAssessment") / 100;
+  const crossBorderFees = grossAmount * feeValue("feeCrossBorder") / 100;
+  const transactionFees = authorizationFees + interchangeFees + processingFees + assessmentFees + crossBorderFees;
+  const otherDeductions = feeValue("feeChargeback") + feeValue("feeChargebackPrincipal") + feeValue("feeWire");
+  const netAmount = grossAmount - vatAmount - transactionFees - otherDeductions;
+  const estimatedCurrentReserve = grossAmount * feeValue("feeReserve", 10) / 100;
+  const estimatedPayout = grossAmount - transactionFees - otherDeductions - estimatedCurrentReserve;
+
+const sixMonthsAgo = new Date();
+
+sixMonthsAgo.setMonth(
+    sixMonthsAgo.getMonth() - 6
+);
+
+let sixMonthGrossRevenue = 0;
+
+for (const transaction of allTransactions) {
+
+    if (
+        normalizeStatus(transaction) !==
+        "SUCCESSFUL"
+    ) {
+        continue;
+    }
+
+    const transactionDate =
+        new Date(transaction.created_at);
+
+    if (
+        Number.isNaN(
+            transactionDate.getTime()
+        )
+    ) {
+        continue;
+    }
+
+    if (
+        transactionDate >= sixMonthsAgo
+    ) {
+        sixMonthGrossRevenue +=
+            Number(transaction.amount) || 0;
+    }
+}
+
+const rollingReserveAmount =
+    sixMonthGrossRevenue * 0.10; // historical estimate retained for reference only
+
+  totalCount.textContent = total;
+  successfulCount.textContent = successful;
+  failedCount.textContent = failed;
+  pendingCount.textContent = pending;
+  approvalRate.textContent = rate.toFixed(1) + "%";
+
+  grossRevenue.textContent =
+    "£" + grossAmount.toFixed(2);
+
+  estimatedVat.textContent =
+  "£" + vatAmount.toFixed(2);
+
+transactionFeesDisplay.textContent = "£" + transactionFees.toFixed(2);
+  for (const [id, amount] of Object.entries({authorizationFees, interchangeFees, processingFees, assessmentFees, crossBorderFees, otherDeductions, estimatedPayout})) {
+    document.getElementById(id).textContent = "£" + amount.toFixed(2);
+  }
+
+netRevenue.textContent =
+  "£" + netAmount.toFixed(2);
+
+rollingReserve.textContent =
+    "£" +
+    estimatedCurrentReserve.toFixed(2);
+
+  console.log({
+    blocked,
+    threeDSExcluded,
+    grossAmount,
+    vatAmount,
+    netAmount
+  });
+}
+
+    function renderTable() {
+      transactionsBody.innerHTML = "";
+      if (filteredTransactions.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      for (const transaction of filteredTransactions) {
+        const status = normalizeStatus(transaction);
+        const reason = transaction.reason || transaction.gateway_status || transaction.payment_status || "-";
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${escapeHtml(formatDate(transaction.created_at))}</td>
+          <td>${escapeHtml(transaction.email || "-")}</td>
+          <td>${escapeHtml(formatAmount(transaction.amount))}</td>
+          <td>${escapeHtml(transaction.plan || "-")}</td>
+          <td>${getStatusBadge(status)}</td>
+          <td>${escapeHtml(reason)}</td>
+          <td class="mono">${escapeHtml(transaction.card_bin || "-")}</td>
+<td>${escapeHtml(transaction.card_country || "-")}</td>
+<td>${escapeHtml(transaction.card_type || "-")}</td>
+<td class="mono">${escapeHtml(transaction.last_four || "-")}</td>
+          <td>${escapeHtml(transaction.affiliate_source || "-")}</td>
+<td>${escapeHtml(transaction.traffic_source || "-")}</td>
+<td class="mono">${escapeHtml(transaction.sub_id || "-")}</td>
+<td class="mono">${escapeHtml(transaction.reference || "-")}</td>
+<td class="mono">${escapeHtml(transaction.xolvis_uuid || "-")}</td>
+<td>${
+  transaction.refund_reference
+    ? escapeHtml(transaction.refund_status || "SUBMITTING") +
+      " (" + escapeHtml(transaction.refund_reference) + ")"
+    : status === "SUCCESSFUL" &&
+      transaction.xolvis_uuid &&
+      transaction.paid_at
+      ? `<button type="button" class="refund-button">Refund full amount</button>`
+      : "-"
+}</td>
+        `;
+
+        transactionsBody.appendChild(row);
+const refundButton = row.querySelector(".refund-button");
+if (refundButton) {
+  refundButton.addEventListener(
+    "click",
+    () => requestFullRefund(transaction, refundButton)
+  );
+}
+      }
+    }
+
+async function requestFullRefund(transaction, button) {
+  const message =
+    `Refund £${Number(transaction.amount).toFixed(2)} to ${transaction.email}\n` +
+    `Reference: ${transaction.reference}\n\n` +
+    "This submits a real refund to Xolvis. Continue?";
+
+  if (!window.confirm(message)) return;
+
+  button.disabled = true;
+  button.textContent = "Submitting...";
+
+  try {
+    const response = await fetch(
+      "/api/admin/transactions/" +
+        encodeURIComponent(transaction.reference) +
+        "/refund",
+      {
+        method: "POST",
+        headers: {
+          "x-admin-password": adminPassword,
+          "Content-Type": "application/json"
+        },
+        body: "{}"
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Refund request failed");
+    }
+
+    window.alert(
+      `Refund request sent. Xolvis status: ${result.status}. ` +
+      `Reference: ${result.refundReference}`
+    );
+  } catch (error) {
+    window.alert(
+      error.message +
+      " Check Xolvis before attempting another refund."
+    );
+  } finally {
+    await loadTransactions(false);
+  }
+}
+
+async function importHistoricalTransactions() {
+  const files =
+    Array.from(
+      historicalTransactionFileInput.files || []
+    );
+
+  if (files.length === 0) {
+    window.alert(
+      "Please select at least one bank CSV file."
+    );
+    return;
+  }
+
+  const confirmed =
+    window.confirm(
+      "Import " +
+      files.length +
+      " historical bank CSV file(s)?\n\n" +
+      "Only cleared LegendSpeak.net and LegendSpeak.ai purchases will be imported. " +
+      "SpeakToHeaven transactions, refunds and duplicates will be ignored."
+    );
+
+  if (!confirmed) {
+    historicalTransactionFileInput.value = "";
+    return;
+  }
+
+  const formData =
+    new FormData();
+
+  for (const file of files) {
+    formData.append(
+      "files",
+      file
+    );
+  }
+
+  importHistoricalTransactionsButton.disabled =
+    true;
+
+  importHistoricalTransactionsButton.textContent =
+    "Importing...";
+
+  statusLine.textContent =
+    "Importing historical bank transactions...";
+
+  try {
+    const response =
+      await fetch(
+        HISTORICAL_TRANSACTION_IMPORT_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "x-admin-password":
+              adminPassword
+          },
+
+          body: formData
+        }
+      );
+
+    let data = {};
+
+    try {
+      data =
+        await response.json();
+    } catch {}
+
+    if (
+      !response.ok ||
+      data.success !== true
+    ) {
+      throw new Error(
+        data.error ||
+        "Historical transaction import failed"
+      );
+    }
+
+    const message =
+      "Historical import complete.\n\n" +
+      "Files processed: " +
+      data.filesProcessed +
+      "\n" +
+      "Rows found: " +
+      data.totalRows +
+      "\n" +
+      "New LegendSpeak sales imported: " +
+      data.imported +
+      "\n" +
+      "Duplicates already in database: " +
+      data.duplicates +
+      "\n" +
+      "Other merchants ignored: " +
+      data.ignoredOtherMerchant +
+      "\n" +
+      "Refunds/non-purchases ignored: " +
+      data.ignoredNonPurchase +
+      "\n" +
+      "Non-cleared transactions ignored: " +
+      data.ignoredNotCleared +
+      "\n" +
+      "Invalid rows skipped: " +
+      data.skipped;
+
+    window.alert(message);
+
+    historicalTransactionFileInput.value =
+      "";
+
+    await loadTransactions(false);
+
+    statusLine.textContent =
+      "Historical import complete: " +
+      data.imported +
+      " new sales imported.";
+
+  } catch (error) {
+    console.error(error);
+
+    window.alert(
+      "Import failed: " +
+      error.message
+    );
+
+    statusLine.textContent =
+      "Historical import failed.";
+
+  } finally {
+    importHistoricalTransactionsButton.disabled =
+      false;
+
+    importHistoricalTransactionsButton.textContent =
+      "Import Historical Transactions";
+  }
+}
+    function csvCell(value) {
+      return '"' + String(value ?? "").replace(/"/g, '""') + '"';
+    }
+
+    function downloadCsv() {
+      const headers = [
+  "Date and time",
+  "Email",
+  "Amount",
+  "Plan",
+  "Status",
+  "Reason",
+  "BIN",
+  "Country",
+  "Card type",
+  "Last four",
+  "Affiliate",
+"Source",
+"Sub ID",
+"Reference",
+"Xolvis UUID"
+];
+      const rows = filteredTransactions.map(t => [
+        formatDate(t.created_at),
+        t.email || "",
+        t.amount || "",
+        t.plan || "",
+        normalizeStatus(t),
+        t.reason || t.gateway_status || t.payment_status || "",
+        t.card_bin || "",
+t.card_country || "",
+t.card_type || "",
+t.last_four || "",
+        t.affiliate_source || "",
+t.traffic_source || "",
+t.sub_id || "",
+t.reference || "",
+t.xolvis_uuid || ""
+      ]);
+
+      const csv = [headers.map(csvCell).join(","), ...rows.map(row => row.map(csvCell).join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "speak-to-heaven-transactions-" + new Date().toISOString().slice(0,10) + ".csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+
+async function downloadAllInvoices() {
+  downloadInvoicesButton.disabled = true;
+  downloadInvoicesButton.textContent = "Preparing Invoices...";
+
+  try {
+    const response = await fetch(
+      INVOICES_DOWNLOAD_URL,
+      {
+        headers: {
+          "x-admin-password": adminPassword
+        },
+        cache: "no-store"
+      }
+    );
+
+    if (response.status === 401) {
+      throw new Error("Incorrect admin password");
+    }
+
+    if (!response.ok) {
+      let errorMessage = "Could not download invoices";
+
+      try {
+        const data = await response.json();
+
+        if (data.error) {
+          errorMessage = data.error;
+        }
+      } catch {}
+
+      throw new Error(errorMessage);
+    }
+
+    const blob = await response.blob();
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const link =
+      document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+      "legendspeak-invoices-" +
+      new Date()
+        .toISOString()
+        .slice(0, 10) +
+      ".zip";
+
+    document.body.appendChild(link);
+
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+  } catch (error) {
+    alert(
+      "Invoice download failed: " +
+      error.message
+    );
+
+  } finally {
+    downloadInvoicesButton.disabled = false;
+    downloadInvoicesButton.textContent =
+      "Download All Invoices";
+  }
+}
+
+
+function showDashboardView(viewName) {
+  const showTransactions =
+    viewName === "transactions";
+
+  const showChargebacks =
+    viewName === "chargebacks";
+
+  const showFraud =
+    viewName === "fraud";
+
+  transactionsView.classList.toggle(
+    "view-hidden",
+    !showTransactions
+  );
+
+  chargebacksView.classList.toggle(
+    "view-hidden",
+    !showChargebacks
+  );
+
+  fraudView.classList.toggle(
+    "view-hidden",
+    !showFraud
+  );
+
+  transactionsTabButton.classList.toggle(
+    "active",
+    showTransactions
+  );
+
+  chargebacksTabButton.classList.toggle(
+    "active",
+    showChargebacks
+  );
+
+  fraudTabButton.classList.toggle(
+    "active",
+    showFraud
+  );
+
+  if (showChargebacks) {
+    loadChargebacks(false);
+  }
+
+  if (showFraud) {
+    loadFraudReports(false);
+  }
+}
+
+function fillSelect(  select,
+  values,
+  allLabel
+) {
+  const current = select.value;
+
+  const cleaned = [
+    ...new Set(
+      values
+        .map(
+          value =>
+            String(value || "").trim()
+        )
+        .filter(Boolean)
+    )
+  ].sort();
+
+  select.innerHTML =
+    '<option value="ALL">' +
+    allLabel +
+    "</option>";
+
+  for (const value of cleaned) {
+    const option =
+      document.createElement("option");
+
+    option.value = value;
+    option.textContent = value;
+
+    select.appendChild(option);
+  }
+
+  if (cleaned.includes(current)) {
+    select.value = current;
+  }
+}
+
+function populateChargebackFilters() {
+  const transactionCountries =
+    allTransactions.map(
+      transaction =>
+        String(
+          transaction.card_country || ""
+        )
+          .trim()
+          .toUpperCase()
+    );
+
+  const chargebackCountries =
+    allChargebacks.map(
+      chargeback =>
+        String(
+          chargeback.card_country || ""
+        )
+          .trim()
+          .toUpperCase()
+    );
+
+  fillSelect(
+    cbCountryFilter,
+    transactionCountries.concat(
+      chargebackCountries
+    ),
+    "All countries"
+  );
+
+  fillSelect(
+    cbAffiliateFilter,
+    allTransactions
+      .map(t => t.affiliate_source)
+      .concat(
+        allChargebacks.map(
+          c => c.affiliate_source
+        )
+      ),
+    "All affiliates"
+  );
+
+  fillSelect(
+    cbPlanFilter,
+    allTransactions
+      .map(t => t.plan)
+      .concat(
+        allChargebacks.map(
+          c => c.plan
+        )
+      ),
+    "All plans"
+  );
+
+  fillSelect(
+    cbCardTypeFilter,
+    allTransactions
+      .map(t => t.card_type)
+      .concat(
+        allChargebacks.map(
+          c => c.card_type
+        )
+      ),
+    "All card types"
+  );
+
+  fillSelect(
+    cbReasonFilter,
+    allChargebacks.map(
+      c => c.reason_code
+    ),
+    "All reasons"
+  );
+
+  fillSelect(
+    cbNetworkFilter,
+    allChargebacks.map(
+      c => c.network
+    ),
+    "All networks"
+  );
+}
+
+async function loadChargebacks(
+  showError = true
+) {
+  try {
+    const response =
+      await fetch(
+        CHARGEBACKS_API_URL,
+        {
+          headers: {
+            "x-admin-password":
+              adminPassword
+          },
+          cache: "no-store"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      data.success !== true
+    ) {
+      throw new Error(
+        data.error ||
+        "Could not load chargebacks"
+      );
+    }
+
+    allChargebacks =
+      Array.isArray(data.chargebacks)
+        ? data.chargebacks
+        : [];
+
+    populateChargebackFilters();
+    renderChargebackReport();
+
+    chargebackStatusLine.textContent =
+      "Loaded " +
+      allChargebacks.length +
+      " chargeback(s).";
+
+  } catch (error) {
+    if (showError) {
+      chargebackStatusLine.textContent =
+        error.message;
+    } else {
+      console.error(error);
+    }
+  }
+}
+
+async function uploadChargebackCsv() {
+  const file =
+    chargebackFileInput.files[0];
+
+  if (!file) {
+    chargebackStatusLine.textContent =
+      "Choose a CSV file first.";
+
+    return;
+  }
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "file",
+    file
+  );
+
+  uploadChargebacksButton.disabled = true;
+
+  chargebackStatusLine.textContent =
+    "Uploading and matching chargebacks...";
+
+  try {
+    const response =
+      await fetch(
+        CHARGEBACK_UPLOAD_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "x-admin-password":
+              adminPassword
+          },
+
+          body: formData
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      data.success !== true
+    ) {
+      throw new Error(
+        data.error ||
+        "Could not upload chargebacks"
+      );
+    }
+
+    chargebackStatusLine.textContent =
+      "Upload complete: " +
+      data.imported +
+      " new, " +
+      data.updated +
+      " updated, " +
+      data.matched +
+      " matched to successful payments, " +
+      data.skipped +
+      " skipped.";
+
+    chargebackFileInput.value = "";
+
+    await loadChargebacks(false);
+
+  } catch (error) {
+    chargebackStatusLine.textContent =
+      error.message;
+
+  } finally {
+    uploadChargebacksButton.disabled =
+      false;
+  }
+}
+
+function dateInChargebackRange(value) {
+  if (!value) {
+    return false;
+  }
+
+  const date =
+    new Date(
+      String(value).slice(0, 10) +
+      "T12:00:00"
+    );
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return false;
+  }
+
+  if (cbStartDate.value) {
+    const start =
+      new Date(
+        cbStartDate.value +
+        "T00:00:00"
+      );
+
+    if (date < start) {
+      return false;
+    }
+  }
+
+  if (cbEndDate.value) {
+    const end =
+      new Date(
+        cbEndDate.value +
+        "T23:59:59.999"
+      );
+
+    if (date > end) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function passesCommonCbFilters(item) {
+  const country =
+    String(
+      item.card_country || ""
+    )
+      .trim()
+      .toUpperCase();
+
+  const affiliate =
+    String(
+      item.affiliate_source || ""
+    ).trim();
+
+  const plan =
+    String(
+      item.plan || ""
+    ).trim();
+
+  const cardType =
+    String(
+      item.card_type || ""
+    ).trim();
+
+  return (
+    (
+      cbCountryFilter.value === "ALL" ||
+      country === cbCountryFilter.value
+    ) &&
+    (
+      cbAffiliateFilter.value === "ALL" ||
+      affiliate === cbAffiliateFilter.value
+    ) &&
+    (
+      cbPlanFilter.value === "ALL" ||
+      plan === cbPlanFilter.value
+    ) &&
+    (
+      cbCardTypeFilter.value === "ALL" ||
+      cardType === cbCardTypeFilter.value
+    )
+  );
+}
+
+function groupValue(item, field) {
+  let value =
+    item[field];
+
+  if (
+    field === "card_country"
+  ) {
+    value =
+      String(value || "")
+        .toUpperCase();
+  }
+
+  return (
+    String(
+      value || "Unknown"
+    ).trim() ||
+    "Unknown"
+  );
+}
+
+function renderChargebackReport() {
+  const groupField =
+    cbGroupBy.value;
+
+  const groupNames = {
+    card_bin: "BIN",
+    card_country: "Country",
+    affiliate_source: "Affiliate",
+    plan: "Plan",
+    card_type: "Card type",
+    reason_code: "Reason",
+    network: "Network"
+  };
+
+  cbGroupHeader.textContent =
+    groupNames[groupField] ||
+    "Group";
+
+  const successfulSales =
+    allTransactions.filter(
+      transaction => {
+
+        if (
+          normalizeStatus(
+            transaction
+          ) !== "SUCCESSFUL"
+        ) {
+          return false;
+        }
+
+        if (
+          !passesCommonCbFilters(
+            transaction
+          )
+        ) {
+          return false;
+        }
+
+        return dateInChargebackRange(
+          transaction.created_at
+        );
+      }
+    );
+
+  const chargebacks =
+    allChargebacks.filter(
+      chargeback => {
+
+        if (
+          !passesCommonCbFilters(
+            chargeback
+          )
+        ) {
+          return false;
+        }
+
+        if (
+          !dateInChargebackRange(
+            chargeback.transaction_date
+          )
+        ) {
+          return false;
+        }
+
+        if (
+          cbReasonFilter.value !== "ALL" &&
+          String(
+            chargeback.reason_code || ""
+          ) !== cbReasonFilter.value
+        ) {
+          return false;
+        }
+
+        if (
+          cbNetworkFilter.value !== "ALL" &&
+          String(
+            chargeback.network || ""
+          ) !== cbNetworkFilter.value
+        ) {
+          return false;
+        }
+
+        return true;
+      }
+    );
+
+  const totalCbAmount =
+    chargebacks.reduce(
+      (sum, chargeback) =>
+        sum +
+        (
+          Number(
+            chargeback.amount
+          ) || 0
+        ),
+      0
+    );
+
+  const totalRate =
+    successfulSales.length
+      ? (
+          chargebacks.length /
+          successfulSales.length
+        ) * 100
+      : 0;
+
+  cbSuccessfulSales.textContent =
+    successfulSales.length;
+
+  cbCount.textContent =
+    chargebacks.length;
+
+  cbRate.textContent =
+    totalRate.toFixed(2) + "%";
+
+  cbAmount.textContent =
+    "£" +
+    totalCbAmount.toFixed(2);
+
+  const groups =
+    new Map();
+
+  function ensure(name) {
+    if (!groups.has(name)) {
+      groups.set(
+        name,
+        {
+          group: name,
+          sales: 0,
+          chargebacks: 0,
+          amount: 0
+        }
+      );
+    }
+
+    return groups.get(name);
+  }
+
+  if (
+    [
+      "reason_code",
+      "network"
+    ].includes(groupField)
+  ) {
+    const denominator =
+      successfulSales.length;
+
+    for (
+      const chargeback
+      of chargebacks
+    ) {
+      const group =
+        ensure(
+          groupValue(
+            chargeback,
+            groupField
+          )
+        );
+
+      group.chargebacks++;
+
+      group.amount +=
+        Number(
+          chargeback.amount
+        ) || 0;
+
+      group.sales =
+        denominator;
+    }
+
+  } else {
+    for (
+      const sale
+      of successfulSales
+    ) {
+      ensure(
+        groupValue(
+          sale,
+          groupField
+        )
+      ).sales++;
+    }
+
+    for (
+      const chargeback
+      of chargebacks
+    ) {
+      const group =
+        ensure(
+          groupValue(
+            chargeback,
+            groupField
+          )
+        );
+
+      group.chargebacks++;
+
+      group.amount +=
+        Number(
+          chargeback.amount
+        ) || 0;
+    }
+  }
+
+  let rows =
+    [...groups.values()]
+      .map(group => ({
+        ...group,
+
+        rate:
+          group.sales
+            ? (
+                group.chargebacks /
+                group.sales
+              ) * 100
+            : (
+                group.chargebacks
+                  ? Infinity
+                  : 0
+              ),
+
+        avg:
+          group.chargebacks
+            ? (
+                group.amount /
+                group.chargebacks
+              )
+            : 0
+      }));
+
+  const sort =
+    cbSortBy.value;
+
+  rows.sort(
+    (a, b) => {
+
+      if (
+        sort ===
+        "chargebacks_desc"
+      ) {
+        return (
+          b.chargebacks -
+          a.chargebacks
+        );
+      }
+
+      if (
+        sort ===
+        "amount_desc"
+      ) {
+        return (
+          b.amount -
+          a.amount
+        );
+      }
+
+      if (
+        sort ===
+        "sales_desc"
+      ) {
+        return (
+          b.sales -
+          a.sales
+        );
+      }
+
+      if (
+        sort ===
+        "group_asc"
+      ) {
+        return (
+          a.group.localeCompare(
+            b.group
+          )
+        );
+      }
+
+      return (
+        b.rate -
+        a.rate
+      );
+    }
+  );
+
+  chargebackPivotBody.innerHTML =
+    "";
+
+  if (!rows.length) {
+    chargebackEmptyState.style.display =
+      "block";
+
+    return;
+  }
+
+  chargebackEmptyState.style.display =
+    "none";
+
+  for (const item of rows) {
+    const row =
+      document.createElement("tr");
+
+    const rateText =
+      Number.isFinite(
+        item.rate
+      )
+        ? item.rate.toFixed(2) + "%"
+        : "No sales";
+
+    row.innerHTML = `
+      <td class="mono">${escapeHtml(item.group)}</td>
+      <td>${escapeHtml(item.sales)}</td>
+      <td>${escapeHtml(item.chargebacks)}</td>
+      <td>${escapeHtml(rateText)}</td>
+      <td>${escapeHtml("£" + item.amount.toFixed(2))}</td>
+      <td>${escapeHtml("£" + item.avg.toFixed(2))}</td>
+    `;
+
+    chargebackPivotBody.appendChild(
+      row
+    );
+  }
+}
+
+function clearChargebackFilters() {
+  cbGroupBy.value =
+    "card_bin";
+
+  cbSortBy.value =
+    "rate_desc";
+
+  cbCountryFilter.value =
+    "ALL";
+
+  cbAffiliateFilter.value =
+    "ALL";
+
+  cbPlanFilter.value =
+    "ALL";
+
+  cbCardTypeFilter.value =
+    "ALL";
+
+  cbReasonFilter.value =
+    "ALL";
+
+  cbNetworkFilter.value =
+    "ALL";
+
+  cbStartDate.value = "";
+  cbEndDate.value = "";
+
+  renderChargebackReport();
+}
+
+
+function populateFraudFilters() {
+  const transactionCountries =
+    allTransactions.map(
+      transaction =>
+        String(
+          transaction.card_country || ""
+        )
+          .trim()
+          .toUpperCase()
+    );
+
+  const fraudCountries =
+    allFraudReports.map(
+      fraud =>
+        String(
+          fraud.card_country || ""
+        )
+          .trim()
+          .toUpperCase()
+    );
+
+  fillSelect(
+    fraudCountryFilter,
+    transactionCountries.concat(
+      fraudCountries
+    ),
+    "All countries"
+  );
+
+  fillSelect(
+    fraudAffiliateFilter,
+    allTransactions
+      .map(t => t.affiliate_source)
+      .concat(
+        allFraudReports.map(
+          f => f.affiliate_source
+        )
+      ),
+    "All affiliates"
+  );
+
+  fillSelect(
+    fraudPlanFilter,
+    allTransactions
+      .map(t => t.plan)
+      .concat(
+        allFraudReports.map(
+          f => f.plan
+        )
+      ),
+    "All plans"
+  );
+
+  fillSelect(
+    fraudCardTypeFilter,
+    allTransactions
+      .map(t => t.card_type)
+      .concat(
+        allFraudReports.map(
+          f => f.card_type
+        )
+      ),
+    "All card types"
+  );
+
+  fillSelect(
+    fraudTypeFilter,
+    allFraudReports.map(
+      f => f.fraud_type
+    ),
+    "All fraud types"
+  );
+}
+
+
+async function loadFraudReports(
+  showError = true
+) {
+  try {
+    const response =
+      await fetch(
+        FRAUD_API_URL,
+        {
+          headers: {
+            "x-admin-password":
+              adminPassword
+          },
+          cache: "no-store"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      data.success !== true
+    ) {
+      throw new Error(
+        data.error ||
+        "Could not load fraud reports"
+      );
+    }
+
+    allFraudReports =
+      Array.isArray(
+        data.fraudReports
+      )
+        ? data.fraudReports
+        : [];
+
+    populateFraudFilters();
+    renderFraudReport();
+
+    fraudStatusLine.textContent =
+      "Loaded " +
+      allFraudReports.length +
+      " fraud report(s).";
+
+  } catch (error) {
+    if (showError) {
+      fraudStatusLine.textContent =
+        error.message;
+    } else {
+      console.error(error);
+    }
+  }
+}
+
+
+async function uploadFraudExcel() {
+  const files =
+    Array.from(
+      fraudFileInput.files || []
+    );
+
+  if (files.length === 0) {
+    fraudStatusLine.textContent =
+      "Choose at least one Excel file first.";
+
+    return;
+  }
+
+  uploadFraudButton.disabled = true;
+
+  let totalImported = 0;
+  let totalUpdated = 0;
+  let totalMatched = 0;
+  let totalSkipped = 0;
+  let totalIgnoredOtherMerchant = 0;
+  let filesProcessed = 0;
+
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      fraudStatusLine.textContent =
+        "Uploading fraud file " +
+        (i + 1) +
+        " of " +
+        files.length +
+        ": " +
+        file.name;
+
+      const formData =
+        new FormData();
+
+      formData.append(
+        "file",
+        file
+      );
+
+      const response =
+        await fetch(
+          FRAUD_UPLOAD_URL,
+          {
+            method: "POST",
+
+            headers: {
+              "x-admin-password":
+                adminPassword
+            },
+
+            body: formData
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        data.success !== true
+      ) {
+        throw new Error(
+          "Failed on " +
+          file.name +
+          ": " +
+          (
+            data.error ||
+            "Could not upload fraud report"
+          )
+        );
+      }
+
+      totalImported +=
+        Number(data.imported) || 0;
+
+      totalUpdated +=
+        Number(data.updated) || 0;
+
+      totalMatched +=
+        Number(data.matched) || 0;
+
+      totalSkipped +=
+        Number(data.skipped) || 0;
+
+      totalIgnoredOtherMerchant +=
+        Number(data.ignoredOtherMerchant) || 0;
+
+      filesProcessed++;
+    }
+
+    fraudFileInput.value = "";
+
+    await loadFraudReports(false);
+
+    fraudStatusLine.textContent =
+      "Upload complete: " +
+      filesProcessed +
+      " file(s) processed, " +
+      totalImported +
+      " new, " +
+      totalUpdated +
+      " updated, " +
+      totalMatched +
+      " matched to successful payments, " +
+      totalSkipped +
+      " skipped, " +
+      totalIgnoredOtherMerchant +
+      " other-merchant row(s) ignored.";
+
+  } catch (error) {
+    fraudStatusLine.textContent =
+      error.message;
+
+  } finally {
+    uploadFraudButton.disabled =
+      false;
+  }
+}
+    
+
+
+function dateInFraudRange(value) {
+  if (!value) {
+    return false;
+  }
+
+  const date =
+    new Date(
+      String(value).slice(0, 10) +
+      "T12:00:00"
+    );
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return false;
+  }
+
+  if (fraudStartDate.value) {
+    const start =
+      new Date(
+        fraudStartDate.value +
+        "T00:00:00"
+      );
+
+    if (date < start) {
+      return false;
+    }
+  }
+
+  if (fraudEndDate.value) {
+    const end =
+      new Date(
+        fraudEndDate.value +
+        "T23:59:59.999"
+      );
+
+    if (date > end) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
+function passesCommonFraudFilters(item) {
+  const country =
+    String(
+      item.card_country || ""
+    )
+      .trim()
+      .toUpperCase();
+
+  const affiliate =
+    String(
+      item.affiliate_source || ""
+    ).trim();
+
+  const plan =
+    String(
+      item.plan || ""
+    ).trim();
+
+  const cardType =
+    String(
+      item.card_type || ""
+    ).trim();
+
+  return (
+    (
+      fraudCountryFilter.value === "ALL" ||
+      country === fraudCountryFilter.value
+    ) &&
+    (
+      fraudAffiliateFilter.value === "ALL" ||
+      affiliate === fraudAffiliateFilter.value
+    ) &&
+    (
+      fraudPlanFilter.value === "ALL" ||
+      plan === fraudPlanFilter.value
+    ) &&
+    (
+      fraudCardTypeFilter.value === "ALL" ||
+      cardType === fraudCardTypeFilter.value
+    )
+  );
+}
+
+
+function renderFraudReport() {
+  const groupField =
+    fraudGroupBy.value;
+
+  const groupNames = {
+    card_bin: "BIN",
+    card_country: "Country",
+    affiliate_source: "Affiliate",
+    plan: "Plan",
+    card_type: "Card type",
+    fraud_type: "Fraud type"
+  };
+
+  fraudGroupHeader.textContent =
+    groupNames[groupField] ||
+    "Group";
+
+  const successfulSales =
+    allTransactions.filter(
+      transaction => {
+
+        if (
+          normalizeStatus(
+            transaction
+          ) !== "SUCCESSFUL"
+        ) {
+          return false;
+        }
+
+        if (
+          !passesCommonFraudFilters(
+            transaction
+          )
+        ) {
+          return false;
+        }
+
+        return dateInFraudRange(
+          transaction.created_at
+        );
+      }
+    );
+
+  const fraudReports =
+    allFraudReports.filter(
+      fraud => {
+
+        if (
+          !passesCommonFraudFilters(
+            fraud
+          )
+        ) {
+          return false;
+        }
+
+        if (
+          !dateInFraudRange(
+            fraud.transaction_date
+          )
+        ) {
+          return false;
+        }
+
+        if (
+          fraudTypeFilter.value !== "ALL" &&
+          String(
+            fraud.fraud_type || ""
+          ) !== fraudTypeFilter.value
+        ) {
+          return false;
+        }
+
+        return true;
+      }
+    );
+
+  const totalFraudAmount =
+    fraudReports.reduce(
+      (sum, fraud) =>
+        sum +
+        (
+          Number(
+            fraud.original_amount
+          ) || 0
+        ),
+      0
+    );
+
+  const totalRate =
+    successfulSales.length
+      ? (
+          fraudReports.length /
+          successfulSales.length
+        ) * 100
+      : 0;
+
+  fraudSuccessfulSales.textContent =
+    successfulSales.length;
+
+  fraudCount.textContent =
+    fraudReports.length;
+
+  fraudRate.textContent =
+    totalRate.toFixed(2) + "%";
+
+  fraudAmount.textContent =
+    "£" +
+    totalFraudAmount.toFixed(2);
+
+  const groups =
+    new Map();
+
+  function ensure(name) {
+    if (!groups.has(name)) {
+      groups.set(
+        name,
+        {
+          group: name,
+          sales: 0,
+          fraud: 0,
+          amount: 0
+        }
+      );
+    }
+
+    return groups.get(name);
+  }
+
+  if (
+    groupField === "fraud_type"
+  ) {
+    const denominator =
+      successfulSales.length;
+
+    for (
+      const fraud
+      of fraudReports
+    ) {
+      const group =
+        ensure(
+          groupValue(
+            fraud,
+            groupField
+          )
+        );
+
+      group.fraud++;
+
+      group.amount +=
+        Number(
+          fraud.original_amount
+        ) || 0;
+
+      group.sales =
+        denominator;
+    }
+
+  } else {
+    for (
+      const sale
+      of successfulSales
+    ) {
+      ensure(
+        groupValue(
+          sale,
+          groupField
+        )
+      ).sales++;
+    }
+
+    for (
+      const fraud
+      of fraudReports
+    ) {
+      const group =
+        ensure(
+          groupValue(
+            fraud,
+            groupField
+          )
+        );
+
+      group.fraud++;
+
+      group.amount +=
+        Number(
+          fraud.original_amount
+        ) || 0;
+    }
+  }
+
+  let rows =
+    [...groups.values()]
+      .map(group => ({
+        ...group,
+
+        rate:
+          group.sales
+            ? (
+                group.fraud /
+                group.sales
+              ) * 100
+            : (
+                group.fraud
+                  ? Infinity
+                  : 0
+              ),
+
+        avg:
+          group.fraud
+            ? (
+                group.amount /
+                group.fraud
+              )
+            : 0
+      }));
+
+  const sort =
+    fraudSortBy.value;
+
+  rows.sort(
+    (a, b) => {
+
+      if (
+        sort ===
+        "fraud_desc"
+      ) {
+        return (
+          b.fraud -
+          a.fraud
+        );
+      }
+
+      if (
+        sort ===
+        "amount_desc"
+      ) {
+        return (
+          b.amount -
+          a.amount
+        );
+      }
+
+      if (
+        sort ===
+        "sales_desc"
+      ) {
+        return (
+          b.sales -
+          a.sales
+        );
+      }
+
+      if (
+        sort ===
+        "group_asc"
+      ) {
+        return (
+          a.group.localeCompare(
+            b.group
+          )
+        );
+      }
+
+      return (
+        b.rate -
+        a.rate
+      );
+    }
+  );
+
+  fraudPivotBody.innerHTML =
+    "";
+
+  if (!rows.length) {
+    fraudEmptyState.style.display =
+      "block";
+
+    return;
+  }
+
+  fraudEmptyState.style.display =
+    "none";
+
+  for (const item of rows) {
+    const row =
+      document.createElement("tr");
+
+    const rateText =
+      Number.isFinite(
+        item.rate
+      )
+        ? item.rate.toFixed(2) + "%"
+        : "No sales";
+
+    row.innerHTML = `
+      <td class="mono">${escapeHtml(item.group)}</td>
+      <td>${escapeHtml(item.sales)}</td>
+      <td>${escapeHtml(item.fraud)}</td>
+      <td>${escapeHtml(rateText)}</td>
+      <td>${escapeHtml("£" + item.amount.toFixed(2))}</td>
+      <td>${escapeHtml("£" + item.avg.toFixed(2))}</td>
+    `;
+
+    fraudPivotBody.appendChild(
+      row
+    );
+  }
+}
+
+
+function clearFraudFilters() {
+  fraudGroupBy.value =
+    "card_bin";
+
+  fraudSortBy.value =
+    "rate_desc";
+
+  fraudCountryFilter.value =
+    "ALL";
+
+  fraudAffiliateFilter.value =
+    "ALL";
+
+  fraudPlanFilter.value =
+    "ALL";
+
+  fraudCardTypeFilter.value =
+    "ALL";
+
+  fraudTypeFilter.value =
+    "ALL";
+
+  fraudStartDate.value = "";
+  fraudEndDate.value = "";
+
+  renderFraudReport();
+}
+
+
+    function clearFilters() {
+      searchInput.value = "";
+statusFilter.value = "ALL";
+planFilter.value = "ALL";
+countryFilter.value = "ALL";
+dateFilter.value = "ALL";
+startDateInput.value = "";
+endDateInput.value = "";
+applyFilters();
+    }
+
+    function logout() {
+      adminPassword = "";
+      allTransactions = [];
+      filteredTransactions = [];
+      allChargebacks = [];
+      allFraudReports = [];
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = null;
+      passwordInput.value = "";
+      dashboard.style.display = "none";
+      loginPanel.style.display = "block";
+      loginError.textContent = "";
+    }
+
+    loginButton.addEventListener("click", () => {
+      adminPassword = passwordInput.value;
+      if (!adminPassword) {
+        loginError.textContent = "Please enter the admin password.";
+        return;
+      }
+      loadTransactions(true);
+    });
+
+    passwordInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") loginButton.click();
+    });
+
+    refreshButton.addEventListener(
+  "click",
+  () => loadTransactions(false)
+);
+
+importHistoricalTransactionsButton.addEventListener(
+  "click",
+  () => {
+    historicalTransactionFileInput.click();
+  }
+);
+
+historicalTransactionFileInput.addEventListener(
+  "change",
+  () => {
+    if (
+      historicalTransactionFileInput.files.length > 0
+    ) {
+      importHistoricalTransactions();
+    }
+  }
+);
+
+downloadButton.addEventListener(
+  "click",
+  downloadCsv
+);
+
+downloadInvoicesButton.addEventListener(
+  "click",
+  downloadAllInvoices
+);
+
+logoutButton.addEventListener(
+  "click",
+  logout
+);
+clearFiltersButton.addEventListener("click", clearFilters);
+    searchInput.addEventListener("input", applyFilters);
+    statusFilter.addEventListener("change", applyFilters);
+    planFilter.addEventListener("change", applyFilters);
+countryFilter.addEventListener("change", applyFilters);
+    dateFilter.addEventListener("change", applyFilters);
+startDateInput.addEventListener("change", () => {
+  if (startDateInput.value) {
+    dateFilter.value = "CUSTOM";
+  }
+
+  applyFilters();
+});
+
+endDateInput.addEventListener("change", () => {
+  if (endDateInput.value) {
+    dateFilter.value = "CUSTOM";
+  }
+
+  applyFilters();
+});
+
+transactionsTabButton.addEventListener(
+  "click",
+  () =>
+    showDashboardView(
+      "transactions"
+    )
+);
+
+chargebacksTabButton.addEventListener(
+  "click",
+  () =>
+    showDashboardView(
+      "chargebacks"
+    )
+);
+
+fraudTabButton.addEventListener(
+  "click",
+  () =>
+    showDashboardView(
+      "fraud"
+    )
+);
+
+uploadChargebacksButton.addEventListener("click", () => {
+  chargebackFileInput.click();
+});
+
+chargebackFileInput.addEventListener("change", () => {
+  if (chargebackFileInput.files.length > 0) {
+    uploadChargebackCsv();
+  }
+});
+
+refreshChargebacksButton.addEventListener(
+  "click",
+  () =>
+    loadChargebacks(true)
+);
+
+cbClearFilters.addEventListener(
+  "click",
+  clearChargebackFilters
+);
+
+[
+  cbGroupBy,
+  cbSortBy,
+  cbCountryFilter,
+  cbAffiliateFilter,
+  cbPlanFilter,
+  cbCardTypeFilter,
+  cbReasonFilter,
+  cbNetworkFilter,
+  cbStartDate,
+  cbEndDate
+].forEach(control => {
+  control.addEventListener(
+    "change",
+    renderChargebackReport
+  );
+});
+
+uploadFraudButton.addEventListener(
+  "click",
+  () => {
+    fraudFileInput.click();
+  }
+);
+
+fraudFileInput.addEventListener(
+  "change",
+  () => {
+    if (
+      fraudFileInput.files.length > 0
+    ) {
+      uploadFraudExcel();
+    }
+  }
+);
+
+refreshFraudButton.addEventListener(
+  "click",
+  () =>
+    loadFraudReports(true)
+);
+
+fraudClearFilters.addEventListener(
+  "click",
+  clearFraudFilters
+);
+
+[
+  fraudGroupBy,
+  fraudSortBy,
+  fraudCountryFilter,
+  fraudAffiliateFilter,
+  fraudPlanFilter,
+  fraudCardTypeFilter,
+  fraudTypeFilter,
+  fraudStartDate,
+  fraudEndDate
+].forEach(control => {
+  control.addEventListener(
+    "change",
+    renderFraudReport
+  );
+});
+
+  </script>
+</body>
+</html>

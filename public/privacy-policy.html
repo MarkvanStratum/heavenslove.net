@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Privacy Policy — Heaven's Love</title>
+  <title>Privacy & Data Protection Policy — HeavensLove</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -25,100 +25,167 @@
     body {
       margin: 0; color: var(--text-main); background-color: var(--bg-heaven);
       background-image: radial-gradient(circle at 50% 0%, rgba(197, 160, 89, 0.12), transparent 30%);
-      font-family: "EB Garamond", serif; font-size: 18px; line-height: 1.7;
+      font-family: "EB Garamond", serif; font-size: 16px; line-height: 1.6;
     }
+
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 20px 80px; }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 40px;
+      padding: 20px 0;
       border-bottom: 1px solid var(--border-holy);
-      background: white;
+      margin-bottom: 40px;
     }
-    .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; }
-    .logo { width: 40px; height: 40px; background: white; border: 1.5px solid var(--gold-divine); border-radius: 50%; display: grid; place-items: center; font-family: "Cinzel", serif; color: var(--gold-divine); font-size: 18px; }
-    .brand h1 { font-family: "Cinzel", serif; font-size: 24px; color: var(--blue-saint); margin: 0; }
+    
+    .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; }
+    .logo { width: 40px; height: 40px; background: white; border: 1.2px solid var(--gold-divine); border-radius: 50%; display: grid; place-items: center; font-family: "Cinzel", serif; color: var(--gold-divine); font-size: 18px; }
+    
+    .content-card { 
+      background: var(--marble); 
+      border: 1px solid var(--border-holy); 
+      border-radius: var(--radius); 
+      box-shadow: var(--divine-shadow); 
+      padding: 50px;
+    }
 
-    main { max-width: 800px; margin: 60px auto; padding: 0 20px; }
-    h1.page-title { font-family: "Cinzel", serif; font-size: 36px; color: var(--blue-saint); text-align: center; margin-bottom: 40px; }
-    h2 { font-family: "Cinzel", serif; font-size: 22px; color: var(--gold-divine); margin-top: 40px; border-bottom: 1px solid var(--border-holy); padding-bottom: 10px; }
-    p { margin-bottom: 20px; }
-    ul { margin-bottom: 20px; }
-    li { margin-bottom: 10px; }
+    h1, h2, h3, h4 { font-family: "Cinzel", serif; color: var(--blue-saint); text-transform: uppercase; margin-top: 30px; }
+    h1 { font-size: 28px; text-align: center; margin-bottom: 10px; border-bottom: 2px solid var(--gold-divine); padding-bottom: 15px; }
+    h2 { font-size: 18px; border-bottom: 1px solid var(--border-holy); padding-bottom: 8px; color: var(--gold-divine); }
+    h3 { font-size: 16px; color: var(--blue-saint); margin-top: 20px; }
+    
+    p, li { margin-bottom: 15px; text-align: justify; }
+    .last-updated { font-style: italic; color: var(--text-muted); text-align: center; margin-bottom: 30px; }
+    
+    .legal-notice {
+        font-weight: bold;
+        text-transform: uppercase;
+        border: 2px solid #000;
+        padding: 20px;
+        margin-bottom: 30px;
+        font-size: 13px;
+        background-color: #fff;
+    }
+
+    .toc {
+        background: #fdfaf5;
+        border: 1px solid var(--border-holy);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    .toc ul { list-style: none; padding-left: 0; columns: 2; }
+    .toc li { font-size: 14px; margin-bottom: 5px; }
 
     footer {
-      margin-top: 80px;
-      padding: 40px 20px;
+      margin-top: 40px;
+      padding: 20px;
       text-align: center;
-      border-top: 1px solid var(--border-holy);
-      font-size: 14px;
-      color: var(--text-muted);
+      font-size: 13px;
+      color: #8a8276;
+      border-top: 1px solid rgba(197, 160, 89, 0.25);
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <a href="/" class="brand">
-      <div class="logo">†</div>
-      <h1>Heaven's Love</h1>
-    </a>
-  </header>
+  <div class="wrap">
+    <header>
+      <a href="/" class="brand">
+        <div class="logo">†</div>
+        <h1 style="margin:0; font-size: 20px; border: none; padding: 0;">HeavensLove</h1>
+      </a>
+    </header>
 
-  <main>
-    <h1 class="page-title">Privacy Policy</h1>
-    <p>Last Updated: April 23, 2026</p>
+    <main class="content-card">
+      <h1>Privacy & Data Protection Policy</h1>
+      <p class="last-updated">Document Version: 2.1.0 (Last Updated: May 8, 2026)</p>
 
-    <p>At <strong>HeavensLove.net</strong> (referred to as "Heaven's Love," "we," "us," or "our"), we are committed to protecting your privacy and ensuring the security of your personal data. This policy explains how we collect, use, and protect your information in compliance with the UK General Data Protection Regulation (UK GDPR).</p>
+      <div class="legal-notice">
+        UK/EU GDPR COMPLIANCE: THIS POLICY DETAILS OUR DATA RETENTION SCHEDULES, THIRD-PARTY PROCESSORS, AND YOUR STATUTORY RIGHTS REGARDING PERSONAL DATA.
+      </div>
 
-    <h2>1. Data We Collect</h2>
-    <p>To provide our spiritual consultation services, we collect:
-      <ul>
-        <li><strong>Account Information:</strong> Your email address and password when you register.</li>
-        <li><strong>Chat History:</strong> Transcripts of your conversations with our AI figures to allow you to review previous guidance.</li>
-        <li><strong>Payment Data:</strong> We use Stripe to process offerings. We do not store your full credit card details on our servers.</li>
-      </ul>
-    </p>
+      <div class="toc">
+        <h3>Summary of Sections</h3>
+        <ul>
+            <li>1. Data Controller Info</li>
+            <li>2. Special Category Data Warning</li>
+            <li>3. AI Provider & Model Training</li>
+            <li>4. Retention Periods</li>
+            <li>5. Payment & Dispute Data</li>
+            <li>6. Fraud Prevention Logs</li>
+            <li>7. Processor Categories</li>
+            <li>8. International Transfers</li>
+            <li>9. Your Deletion Rights</li>
+            <li>10. Contact Information</li>
+        </ul>
+      </div>
 
-    <h2>2. How We Use Your Data</h2>
-    <p>We process your data based on the following legal grounds:
-      <ul>
-        <li><strong>Performance of a Contract:</strong> To manage your account and provide access to the AI chat service.</li>
-        <li><strong>Legitimate Interests:</strong> To improve our AI responses and ensure site security.</li>
-        <li><strong>Consent:</strong> Where you have specifically agreed to receive updates or spiritual insights.</li>
-      </ul>
-    </p>
+      <h2>1. Data Controller</h2>
+      <p>RIDGWELL SERVICES LIMITED (Company No. 16277582), registered in England and Wales, is the data controller for all personal data collected via <strong>HeavensLove.net</strong>.</p>
 
-    <h2>3. Data Retention</h2>
-    <p>We retain your chat history and account data for as long as your account is active. You may request the deletion of your account and associated data at any time by contacting us.</p>
+      <h2>2. Special Category Data Warning</h2>
+      <p>Given the spiritual and religious nature of this service, your interactions with the AI may inadvertently reveal "Special Category Data" (such as religious beliefs, philosophical convictions, or health-related information). 
+      <br><br>
+      <strong>Consent:</strong> By voluntarily entering such information into the chat interface, you provide explicit consent for us to process this data solely for the purpose of providing the AI simulation service.</p>
 
-    <h2>4. Data Security</h2>
-    <p>We implement industry-standard encryption and security measures to protect your data from unauthorized access, alteration, or disclosure. However, please remember that no method of transmission over the internet is 100% secure.</p>
+      <h2>3. AI Provider Disclosure & Model Training</h2>
+      <p><strong>Third-Party AI:</strong> We utilize Large Language Models provided by third-party processors (such as OpenAI, Anthropic, or Google). 
+      <br><br>
+      <strong>Model Training:</strong> We do <b>not</b> use your personal chat history to train the underlying public models of our third-party AI providers. However, de-identified and pseudonymized chat logs may be reviewed by our internal team to improve our specific safety filters and "spiritual alignment" protocols.</p>
 
-    <h2>5. Automated Processing</h2>
-    <p>Heaven's Love uses Artificial Intelligence to simulate religious figures. While the AI generates responses based on your input, we do not use your personal data for "automated decision-making" that has legal or significant effects on you.</p>
+      <h2>4. Data Retention Periods</h2>
+      <p>We adhere to the principle of "data minimization." Our retention schedules are as follows:
+        <ul>
+          <li><strong>Account Data:</strong> Retained for the duration of your active account plus 6 years for tax and legal compliance.</li>
+          <li><strong>Chat Interaction Logs:</strong> Retained for 2 years from the date of interaction to provide conversation continuity, unless you exercise your right to erasure.</li>
+          <li><strong>Technical Logs:</strong> (IP addresses, etc.) Retained for 90 days for security auditing purposes.</li>
+        </ul>
+      </p>
 
-    <h2>6. Your Rights</h2>
-    <p>As a resident of the UK or EEA, you have the right to:
-      <ul>
-        <li>Access, correct, or erase your personal data.</li>
-        <li>Object to or restrict our processing of your data.</li>
-        <li><strong>Right to Complain:</strong> If you have concerns, you have the right to complain directly to us. We will acknowledge your complaint within 30 days and work to resolve it promptly. You also retain the right to contact the Information Commissioner’s Office (ICO).</li>
-      </ul>
-    </p>
+      <h2>5. Payment & Dispute Data Retention</h2>
+      <p>Financial data related to your purchase (transaction amount, date, last 4 digits of card) is retained for 7 years to comply with UK HMRC tax regulations and to handle potential billing disputes or refund requests. Full payment card details are never stored on our servers and are handled exclusively by our PCI-DSS compliant processors.</p>
 
-    <h2>7. Contact Us</h2>
-    <p>For any privacy-related inquiries, please contact our Data Protection representative at:
-      <br><strong>RIDGWELL SERVICES LIMITED (No. 16277582)</strong>
-      <br>85 Great Portland Street, First Floor, London, England, W1W 7LT
-    </p>
-  </main>
+      <h2>6. Fraud Prevention Logs</h2>
+      <p>To protect our community and payment partners, we maintain "Fraud Prevention Logs." This includes Technical Data and Transactional Data used to identify patterns of card testing, unauthorized chargebacks, or account takeovers. These logs are maintained as part of our legitimate interest in securing our platform.</p>
 
-  <footer>
-    <a href="/privacy-policy.html" style="color:#8a8276;margin-right:20px;text-decoration:none;">Privacy Policy</a>
-    <a href="/terms-and-conditions.html" style="color:#8a8276;text-decoration:none;">Terms & Conditions</a>
-    <div style="margin-top: 20px;">&copy; 2026 Heaven's Love. All rights reserved.</div>
-  </footer>
+      <h2>7. Processor & Sub-Processor Categories</h2>
+      <p>We share data with the following categories of processors:
+        <ul>
+          <li><strong>Cloud Infrastructure:</strong> For hosting the website and database.</li>
+          <li><strong>AI Service Providers:</strong> For generating the simulation responses.</li>
+          <li><strong>Payment Gateways:</strong> For processing one-time payments (e.g., Stripe, PayPal).</li>
+          <li><strong>Customer Support Tools:</strong> For managing your help requests.</li>
+          <li><strong>Analytics Providers:</strong> For monitoring site performance.</li>
+        </ul>
+      </p>
+
+      <h2>8. International Data Transfers</h2>
+      <p>Data may be transferred to, and stored at, a destination outside the UK or the European Economic Area (EEA), specifically to the United States where our AI and Cloud providers are headquartered. We ensure such transfers are protected by <b>Standard Contractual Clauses (SCCs)</b> or other legally recognized adequacy frameworks to ensure your data receives the same level of protection as it does in the UK.</p>
+
+      <h2>9. Your Rights: Access & Deletion</h2>
+      <p>Under the UK GDPR, you have the right to:
+        <ul>
+          <li><strong>Access:</strong> Request a copy of all data we hold about you.</li>
+          <li><strong>Deletion (Right to be Forgotten):</strong> Request that we delete your account and all associated chat logs. Note: We may retain certain data if required by law (e.g., tax records).</li>
+          <li><strong>Rectification:</strong> Correct any inaccurate personal information.</li>
+        </ul>
+        To exercise these rights, email <strong>help@HeavensLove.net</strong> with the subject line "Data Rights Request."</p>
+
+      <h2>10. Contact Information</h2>
+      <p><strong>RIDGWELL SERVICES LIMITED</strong><br>
+      85 Great Portland Street, First Floor, London, England, W1W 7LT<br>
+      Email: <strong>help@HeavensLove.net</strong></p>
+    </main>
+
+    <footer>
+      <div style="margin-bottom: 10px;">
+          <a href="/privacy-policy.html" style="color:#8a8276;margin-right:15px;text-decoration:none;">Privacy Policy</a>
+          <a href="/terms-and-conditions.html" style="color:#8a8276;margin-right:15px;text-decoration:none;">Terms & Conditions</a>
+          <a href="/refund-policy.html" style="color:#8a8276;text-decoration:none;">Refund Policy</a>
+      </div>
+      <div>&copy; 2026 RIDGWELL SERVICES LIMITED. Registered in England and Wales No. 16277582. All Rights Reserved.</div>
+    </footer>
+  </div>
 </body>
 </html>

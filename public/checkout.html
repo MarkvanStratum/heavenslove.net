@@ -1,107 +1,573 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<script data-main="payment-js" src="https://api.xolvispay.com/js/integrated/payment.1.3.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heaven’s Love — Secure Checkout</title>
-    <script src="https://js.stripe.com/v3/"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond&display=swap" rel="stylesheet">
+    <title>Sacred Offering — Secure Checkout</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+
     <style>
         :root {
             --gold-divine: #c5a059;
             --blue-saint: #2c3e50;
-            --bg-heaven: #fdfcfb;
+            --bg-layout: #f9fafb;
+            --line-border: #e5e7eb;
+            --text-main: #0a2540;
+            --text-muted: #62748b;
+            --error: #9a1a1a;
+            --success: #16a34a;
         }
-        body { background: var(--bg-heaven); font-family: 'EB Garamond', serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .checkout-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 15px 50px rgba(0,0,0,0.05); width: 100%; max-width: 450px; border: 1px solid rgba(197,160,89,0.2); }
-        .logo { text-align: center; color: var(--gold-divine); font-family: 'Cinzel'; font-size: 30px; margin-bottom: 20px; }
-        h2 { font-family: 'Cinzel'; text-align: center; color: var(--blue-saint); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        p { text-align: center; color: #8a8276; font-style: italic; margin-bottom: 30px; }
-        #payment-element { margin-bottom: 24px; }
-        .pay-btn { background: var(--gold-divine); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-family: 'Cinzel'; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; letter-spacing: 1px; }
-        .pay-btn:hover { background: #b38f4d; transform: translateY(-1px); }
-        .pay-btn:disabled { opacity: 0.5; cursor: default; }
-        #error-message { color: #b03a2e; margin-top: 15px; text-align: center; font-size: 14px; }
+
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: #fff; 
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .safe-header {
+            background: #0a0a0a;
+            color: #fff;
+            font-size: 12px;
+            padding: 8px 20px;
+            text-align: left;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 400px;
+            min-height: calc(100vh - 31px);
+        }
+
+        @media (max-width: 960px) {
+            .main-container { grid-template-columns: 1fr; }
+            .sidebar { border-left: none !important; border-top: 1px solid var(--line-border); }
+        }
+
+        .form-section {
+            padding: 40px min(10%, 80px);
+            background: #fff;
+        }
+
+        .brand-header {
+            text-align: left;
+            margin-bottom: 35px;
+            border-bottom: 1px solid var(--line-border);
+            padding-bottom: 20px;
+        }
+
+        .brand-title {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            color: var(--blue-saint);
+            letter-spacing: 2px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .brand-sub {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: 15px;
+            color: var(--gold-divine);
+            margin-top: 4px;
+        }
+
+        h2 { 
+            font-size: 18px; 
+            font-weight: 700; 
+            margin: 0 0 8px 0; 
+            color: var(--text-main);
+        }
+
+        .subtitle { 
+            color: var(--text-muted); 
+            font-size: 14px; 
+            margin-bottom: 24px; 
+        }
+
+        .input-group { margin-bottom: 20px; }
+        label { 
+            display: block; 
+            margin-bottom: 6px; 
+            color: var(--text-main); 
+            font-size: 13px; 
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cfd6e4;
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-main);
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus { outline: none; border-color: var(--blue-saint); }
+
+        #card-element {
+            padding: 4px 0;
+            border: 1px solid #cfd6e4;
+            border-radius: 8px;
+            background: #fff;
+            min-height: 90px;
+            overflow: hidden;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 15px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .checkbox-container input {
+            margin-top: 3px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-container a {
+            color: var(--blue-saint);
+            text-decoration: underline;
+        }
+
+        .btn-submit {
+            background: #16a34a;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: opacity 0.2s;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; color: #64748b; }
+
+        .message { margin-top: 20px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; }
+        .message.error { display: block; background: #fff1f1; color: var(--error); border: 1px solid #f5bcbc; }
+        .message.success { display: block; background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+
+        .sidebar {
+            background: var(--bg-layout);
+            border-left: 1px solid var(--line-border);
+            padding: 40px 30px;
+        }
+
+        .widget {
+            background: #fff;
+            border: 1px solid var(--line-border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px dashed #d9e2ef;
+            border-radius: 10px;
+            background: #f7fbff;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+        .order-total {
+            border-top: 1px dashed var(--line-border);
+            font-weight: 700;
+            font-size: 16px;
+            padding-top: 12px;
+            margin-top: 6px;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .trust-box {
+            border: 1px solid var(--line-border);
+            padding: 10px;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+.accepted-cards {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.card-logo {
+    width: 48px;
+    height: 30px;
+    display: block;
+}
     </style>
 </head>
 <body>
-    <div class="checkout-box">
-        <div class="logo">†</div>
-        <h2 id="plan-title">Heaven's Love Access</h2>
-        <p id="plan-desc">Begin your spiritual journey with Heaven's Love.</p>
-        
+
+<div class="safe-header">🔒 Secure SSL Checkout Connection</div>
+
+<div class="main-container">
+
+    <div class="form-section">
+        <div class="brand-header">
+            <h1 class="brand-title">SPEAK TO HEAVEN</h1>
+            <div class="brand-sub">Sacred Biblical AI Sanctuary Conversations</div>
+        </div>
+
+        <h2>2. Secure Payment Authorization</h2>
+        <div class="subtitle">Your financial information is completely encrypted and fully isolated.</div>
+
         <form id="payment-form">
-            <div id="payment-element"></div>
-            <button id="submit" class="pay-btn">Complete Offering</button>
-            <div id="error-message"></div>
+            <div class="input-group">
+                <label for="cardholder-name">Cardholder Full Name</label>
+                <input type="text" id="cardholder-name" placeholder="John Doe" required>
+            </div>
+
+            <div class="input-group">
+    <label>Card Number</label>
+    <div id="number_div" style="height:42px;border:1px solid #cfd6e4;border-radius:8px;padding:10px;background:#fff;"></div>
+</div>
+
+<div class="input-group">
+    <label>CVV</label>
+    <div id="cvv_div" style="height:42px;border:1px solid #cfd6e4;border-radius:8px;padding:10px;background:#fff;"></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div class="input-group">
+        <label for="exp_month">Expiry Month</label>
+        <input type="text" id="exp_month" placeholder="MM" required>
+    </div>
+
+    <div class="input-group">
+        <label for="exp_year">Expiry Year</label>
+        <input type="text" id="exp_year" placeholder="YYYY" required>
+    </div>
+</div>
+
+<div class="accepted-cards">
+    <span>We accept</span>
+
+    <svg class="card-logo" viewBox="0 0 48 30" aria-label="Visa">
+        <rect width="48" height="30" rx="4" fill="white" stroke="#d1d5db"/>
+        <text x="24" y="20"
+              text-anchor="middle"
+              font-family="Arial, sans-serif"
+              font-size="13"
+              font-weight="bold"
+              font-style="italic"
+              fill="#1A1F71">VISA</text>
+    </svg>
+
+    <svg class="card-logo" viewBox="0 0 48 30" aria-label="Mastercard">
+        <rect width="48" height="30" rx="4" fill="white" stroke="#d1d5db"/>
+        <circle cx="20" cy="15" r="8" fill="#EB001B"/>
+        <circle cx="28" cy="15" r="8" fill="#F79E1B"/>
+        <path d="M24 8.8a8 8 0 0 1 0 12.4 8 8 0 0 1 0-12.4z" fill="#FF5F00"/>
+    </svg>
+</div>
+
+<label class="checkbox-container">
+                <input type="checkbox" id="check-terms" required>
+                <span>I explicitly authorize and accept the platform <a href="/terms" target="_blank">Terms & Conditions</a>.</span>
+            </label>
+
+            <label class="checkbox-container">
+                <input type="checkbox" id="check-privacy" required>
+                <span>I confirm acknowledgment of immediate system delivery access deployment and agree with the established data usage policies outlined in the <a href="/privacy-policy" target="_blank">Privacy Policy</a>.</span>
+            </label>
+
+            <div id="message-box" class="message"></div>
+
+            <button type="submit" id="submit-button" class="btn-submit">
+                <span id="btn-loader" style="display: none;" class="loader"></span>
+                <span id="btn-text">Pay Securely</span>
+            </button>
         </form>
     </div>
 
-    <script>
-        // Stripe Public Key
-        const stripe = Stripe('pk_live_51TPLrVPjzvvqHoZhv3lTRj1e0jEVNI3p2OSghYk5sfcBbTbfWIspikVwoU46XnItnbKdrhjyzxag89Hqfy99kPdS00TflVGJk3');
+    <div class="sidebar">
         
-        const params = new URLSearchParams(window.location.search);
-        const plan = params.get('plan') || 'god';
-        const token = localStorage.getItem("jwt");
+        <div id="productBox" class="widget" style="display:none">
+            <div class="product-info">
+                <img id="productImg" style="width:52px;height:52px;border-radius:8px;border:1px solid var(--line-border);object-fit:cover;display:none">
+                <div>
+                    <div id="productTitle" style="font-weight:700;font-size:14px"></div>
+                    <div style="font-size:12px;color:var(--text-muted)">Selected Divine Communion Plan</div>
+                </div>
+            </div>
+        </div>
 
-        // UI Updates based on plan
-        const titles = { 
-            'god': 'God Access', 
-            'all': 'Full Access', 
-            'lifetime': 'Lifetime Access' 
-        };
-        document.getElementById('plan-title').innerText = titles[plan] || "Heaven's Love Access";
+        <div class="widget">
+            <div style="font-weight:700;margin-bottom:12px;font-size:14px">Order Verification Summary</div>
+            <div class="order-row">
+                <span>Access to speaktoheaven.ai</span>
+                <span style="font-weight:600;color:var(--success)">Get Access Now</span>
+            </div>
+            <div class="order-row order-total">
+                <span>Total Amount Due:</span>
+                <span id="total-price-display">Calculating...</span>
+                        </div>
+        </div>
 
-        let elements;
+        <div class="widget">
+            <div style="font-weight:700;margin-bottom:10px;font-size:14px">
+                Billing Information
+            </div>
 
-        async function initialize() {
-            const response = await fetch("/api/create-payment-intent", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token 
-                },
-                body: JSON.stringify({ plan }),
+            <div style="font-size:13px;line-height:1.6;color:var(--text-muted)">
+                <strong style="color:var(--text-main)">Card Statement Descriptor:</strong><br>
+                speaktoheaven.ai
+                <br><br>
+
+                <strong style="color:var(--text-main)">Merchant:</strong><br>
+                RIDGWELL SERVICES LIMITED<br>
+                85 Great Portland Street, First Floor<br>
+                London, England, W1W 7LT
+            </div>
+        </div>
+
+        <div class="widget">
+            <div style="font-weight:700;margin-bottom:12px;font-size:14px">Why Choose Our Sanctuary Architecture</div>
+            <div class="trust-grid">
+                <div class="trust-box"><div style="font-size:16px">⭐</div>99.4% Positive</div>
+                <div class="trust-box"><div style="font-size:16px">🔒</div>SSL Secure</div>
+                <div class="trust-box"><div style="font-size:16px">🛡️</div>Isolated Safe</div>
+                <div class="trust-box"><div style="font-size:16px">💬</div>24/7 Portal Support</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const tokenFromServer = window.PROMO_CHECKOUT_TOKEN || null;
+const selectedPlan = window.CHECKOUT_PLAN || null;
+const publicIntegrationKey = window.XOLVIS_PUBLIC_INTEGRATION_KEY || "";
+
+const form = document.getElementById("payment-form");
+const submitBtn = document.getElementById("submit-button");
+const btnLoader = document.getElementById("btn-loader");
+const btnText = document.getElementById("btn-text");
+const messageBox = document.getElementById("message-box");
+const totalPriceDisplay = document.getElementById("total-price-display");
+const planPrices = {
+    "2995": "£29.95",
+    "3595": "£35.95",
+    "4995": "£49.95",
+    "lifetime": "£49.95"
+};
+
+const checkTerms = document.getElementById("check-terms");
+const checkPrivacy = document.getElementById("check-privacy");
+
+let payment = null;
+let paymentReady = false;
+
+function setLoading(isLoading) {
+    submitBtn.disabled = isLoading;
+    btnLoader.style.display = isLoading ? "inline-block" : "none";
+    btnText.textContent = isLoading ? "Processing..." : "Pay Securely";
+}
+
+function showMessage(type, text) {
+    messageBox.textContent = text;
+    messageBox.className = `message ${type}`;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    totalPriceDisplay.textContent =
+        planPrices[selectedPlan] || "Price unavailable";
+
+    if (!publicIntegrationKey) {
+        showMessage("error", "Payment configuration missing. Please contact support.");
+        return;
+    }
+
+    payment = new PaymentJs();
+
+    payment.init(
+        publicIntegrationKey,
+        "number_div",
+        "cvv_div",
+        function (paymentInstance) {
+            paymentReady = true;
+
+            paymentInstance.setNumberPlaceholder("Card number");
+            paymentInstance.setCvvPlaceholder("CVV");
+
+            paymentInstance.setNumberStyle({
+                "font-size": "15px",
+                "font-family": "Inter, system-ui, sans-serif",
+                "color": "#0a2540"
             });
-            
-            const data = await response.json();
-            if (data.error) {
-                document.getElementById('error-message').innerText = data.error;
-                return;
-            }
 
-            const { clientSecret } = data;
-            elements = stripe.elements({ clientSecret });
-            const paymentElement = elements.create("payment");
-            paymentElement.mount("#payment-element");
-        }
-
-        document.querySelector("#payment-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const submitBtn = document.querySelector("#submit");
-            submitBtn.disabled = true;
-
-            const { error } = await stripe.confirmPayment({
-                elements,
-                confirmParams: {
-                    // Redirect back to home with a success flag
-                    return_url: window.location.origin + "/?payment=success",
-                },
+            paymentInstance.setCvvStyle({
+                "font-size": "15px",
+                "font-family": "Inter, system-ui, sans-serif",
+                "color": "#0a2540"
             });
 
-            if (error) {
-                document.querySelector("#error-message").textContent = error.message;
-                submitBtn.disabled = false;
-            }
-        });
-
-        if (!token) {
-            alert("Please sign in to Heaven's Love first.");
-            window.location.href = "/";
-        } else {
-            initialize();
+            console.log("Xolvis Payment.js ready");
         }
-    </script>
+    );
+});
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    messageBox.className = "message";
+
+    if (!tokenFromServer) {
+        showMessage("error", "Invalid or expired checkout session. Please re-select a plan.");
+        return;
+    }
+
+    if (!paymentReady || !payment) {
+        showMessage("error", "Payment fields are still loading. Please wait a moment and try again.");
+        return;
+    }
+
+    if (!checkTerms.checked || !checkPrivacy.checked) {
+        showMessage("error", "Please accept the terms and privacy policy to proceed.");
+        return;
+    }
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    setLoading(true);
+
+    const cardholderName = document.getElementById("cardholder-name").value.trim();
+    const expMonth = document.getElementById("exp_month").value.trim();
+    const expYear = document.getElementById("exp_year").value.trim();
+
+    payment.tokenize(
+        {
+            card_holder: cardholderName,
+            month: expMonth,
+            year: expYear
+        },
+        async function (transactionToken, cardData) {
+            try {
+                const loginToken = localStorage.getItem("jwt");
+
+const requestHeaders = {
+    "Content-Type": "application/json"
+};
+
+if (loginToken) {
+    requestHeaders["Authorization"] =
+        `Bearer ${loginToken}`;
+}
+
+const response = await fetch("/api/create-promo-payment", {
+    method: "POST",
+    headers: requestHeaders,
+    body: JSON.stringify({
+        checkoutToken: tokenFromServer,
+        cardholderName: cardholderName,
+        transactionToken: transactionToken,
+        cardData: cardData
+    })
+});
+
+                const text = await response.text();
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    throw new Error(text || "Server returned an invalid response.");
+                }
+
+                if (!response.ok || data.success === false || data.returnType === "ERROR") {
+                    console.log("XOLVIS RESPONSE:", data);
+                    throw new Error(data.error || data.errorMessage || "Payment failed.");
+                }
+
+                if (data.returnType === "REDIRECT" && data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                    return;
+                }
+
+                showMessage("success", "Payment completed successfully. Your access will be activated shortly.");
+
+                setTimeout(() => {
+    window.location.href = data.successUrl || "/";
+}, 1800);
+
+            } catch (error) {
+                console.error("Payment failed:", error);
+                showMessage("error", error?.message || "Transaction failed.");
+                setLoading(false);
+            }
+        },
+        function (errors) {
+            console.error("TOKENIZE ERRORS:", errors);
+
+            const msg = Array.isArray(errors)
+                ? errors.map(e => e.message || e.key || "Payment field error").join(" ")
+                : "Please check your card details.";
+
+            showMessage("error", msg);
+            setLoading(false);
+        }
+    );
+});
+</script>
 </body>
 </html>
